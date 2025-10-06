@@ -10,13 +10,13 @@ import { jwtMiddleware } from "../../middleware/jwt.js";
 
 const propertiesRouter = new Hono();
 
-// it allows to see properties for logged users
-// propertiesRouter.use("/*", jwtMiddleware);
-
+// Public routes
 propertiesRouter.get("/", getPropertiesController);
 propertiesRouter.get("/:id", getPropertyByIdController);
-propertiesRouter.post("/", createPropertyController);
-propertiesRouter.put("/:id", updatePropertyController);
-propertiesRouter.delete("/:id", deletePropertyController);
+
+// Protected routes
+propertiesRouter.post("/", jwtMiddleware, createPropertyController);
+propertiesRouter.put("/:id", jwtMiddleware, updatePropertyController);
+propertiesRouter.delete("/:id", jwtMiddleware, deletePropertyController);
 
 export default propertiesRouter;

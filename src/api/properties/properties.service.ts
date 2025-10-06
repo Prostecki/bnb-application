@@ -1,24 +1,97 @@
+import { supabase } from "../../lib/supabase.js";
+import type { Property } from "../../models/property.model.js";
+
 export const getProperties = async () => {
-  // TODO: Implement logic to get all properties
-  return { message: "Get all properties" };
+  const { data, error } = await supabase.from("properties").select("*");
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
 };
 
 export const getPropertyById = async (id: string) => {
-  // TODO: Implement logic to get a property by id
-  return { message: `Get property with id ${id}` };
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
 };
 
-export const createProperty = async (data: any) => {
-  // TODO: Implement logic to create a property
-  return { message: "Create property", data };
+export const createProperty = async (
+  property: Omit<Property, "id" | "user_id">,
+  userId: string
+) => {
+  const propertyToCreate = { ...property, user_id: userId };
+  const { data, error } = await supabase
+    .from("properties")
+    .insert([propertyToCreate])
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
 };
 
-export const updateProperty = async (id: string, data: any) => {
-  // TODO: Implement logic to update a property
-  return { message: `Update property with id ${id}`, data };
+export const updateProperty = async (
+  id: string,
+  property: Partial<Property>,
+  userId: string
+) => {
+  // First, verify the user owns the property
+  const { data: existingProperty, error: fetchError } = await supabase
+    .from("properties")
+    .select("user_id")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  if (existingProperty.user_id !== userId) {
+    throw new Error("You are not authorized to update this property.");
+  }
+
+  // If authorized, update the property
+  const { data, error } = await supabase
+    .from("properties")
+    .update(property)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
 };
 
-export const deleteProperty = async (id: string) => {
-  // TODO: Implement logic to delete a property
-  return { message: `Delete property with id ${id}` };
+export const deleteProperty = async (id: string, userId: string) => {
+  // First, verify the user owns the property
+  const { data: existingProperty, error: fetchError } = await supabase
+    .from("properties")
+    .select("user_id")
+    .eq("id", id)
+    .single();
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  if (existingProperty.user_id !== userId) {
+    throw new Error("You are not authorized to delete this property.");
+  }
+
+  // If authorized, delete the property
+  const { error } = await supabase.from("properties").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return { message: `Property with id ${id} deleted successfully` };
 };
