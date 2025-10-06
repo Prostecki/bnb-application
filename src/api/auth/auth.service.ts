@@ -1,5 +1,5 @@
 import { supabase } from "../../lib/supabase.js";
-import type { UserCredentials } from "../../models/user.model.js";
+import type { UserCredentials } from "../../models/user.model.ts";
 
 export const signUpUser = async (credentials: UserCredentials) => {
   const { email, password, name } = credentials;
@@ -21,16 +21,14 @@ export const signUpUser = async (credentials: UserCredentials) => {
     throw new Error("Signup successful, but no user data returned.");
   }
 
-  const { error: profileError } = await supabase
-    .from("users")
-    .insert([
-      {
-        id: authData.user.id,
-        name: name,
-        email: authData.user.email,
-        is_admin: false,
-      },
-    ]);
+  const { error: profileError } = await supabase.from("users").insert([
+    {
+      id: authData.user.id,
+      name: name,
+      email: authData.user.email,
+      is_admin: false,
+    },
+  ]);
 
   if (profileError) {
     console.error("Error creating user profile:", profileError);
@@ -40,7 +38,9 @@ export const signUpUser = async (credentials: UserCredentials) => {
   return authData;
 };
 
-export const signInUser = async (credentials: Omit<UserCredentials, "name">) => {
+export const signInUser = async (
+  credentials: Omit<UserCredentials, "name">
+) => {
   const { email, password } = credentials;
 
   if (!email || !password) {
@@ -57,4 +57,22 @@ export const signInUser = async (credentials: Omit<UserCredentials, "name">) => 
   }
 
   return data;
+};
+
+export const forgotPasswordService = async (email: string) => {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: process.env.FRONTEND_URL + "/reset-password",
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const signOutService = async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw new Error(error.message);
+  }
 };
