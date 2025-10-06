@@ -14,6 +14,7 @@ const calculateNights = (checkIn: string, checkOut: string): number => {
 };
 
 export const createBooking = async (
+  // Pick<T, value> - it's like Omit, but Omit excludes properties, and Pick takes in only those which you need
   bookingData: Pick<Booking, "propertyId" | "checkInDate" | "checkOutDate">,
   userId: string
 ) => {
@@ -31,16 +32,19 @@ export const createBooking = async (
   }
 
   // 2. Calculate the total price
-  const numberOfNights = calculateNights(checkInDate.toString(), checkOutDate.toString());
+  const numberOfNights = calculateNights(
+    checkInDate.toString(),
+    checkOutDate.toString()
+  );
   const totalPrice = numberOfNights * property.pricePerNight;
 
   // 3. Create the new booking object
   const newBooking = {
-    property_id: propertyId,
-    user_id: userId,
-    check_in_date: checkInDate,
-    check_out_date: checkOutDate,
-    total_price: totalPrice,
+    propertyId,
+    userId,
+    checkInDate,
+    checkOutDate,
+    totalPrice,
   };
 
   // 4. Insert the booking into the database
