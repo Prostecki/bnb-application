@@ -9,6 +9,17 @@ export const getProperties = async () => {
   return data;
 };
 
+export const getPropertiesByUserId = async (userId: string) => {
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
+
 export const getPropertyById = async (id: string) => {
   const { data, error } = await supabase
     .from("properties")

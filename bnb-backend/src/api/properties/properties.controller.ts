@@ -7,6 +7,13 @@ export const getPropertiesController = async (c: Context) => {
   return c.json(data);
 };
 
+export const getMyPropertiesController = async (c: Context) => {
+  const payload = c.get("jwtPayload");
+  const userId = payload.sub;
+  const data = await propertyService.getPropertiesByUserId(userId);
+  return c.json(data);
+};
+
 export const getPropertyByIdController = async (c: Context) => {
   const { id } = c.req.param();
   const data = await propertyService.getPropertyById(id);
