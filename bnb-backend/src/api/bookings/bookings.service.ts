@@ -129,8 +129,6 @@ export const deleteBooking = async (
   guestEmail?: string,
   guestPhoneNumber?: string
 ) => {
-  console.log("deleteBooking: id=", id, "userId=", userId, "guestEmail=", guestEmail, "guestPhoneNumber=", guestPhoneNumber);
-
   // 1. Fetch the booking by ID first
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
@@ -139,7 +137,6 @@ export const deleteBooking = async (
     .single();
 
   if (fetchError || !booking) {
-    console.error("deleteBooking: Fetch error or booking not found:", fetchError?.message);
     throw new Error(fetchError?.message || "Booking not found.");
   }
 
@@ -148,12 +145,8 @@ export const deleteBooking = async (
   if (userId && booking.user_id === userId) {
     // Authenticated user deleting their own booking
     isAuthorized = true;
-  } else if (!userId && booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
+  } else if (booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
     // Unauthenticated booking, being deleted by an authenticated user providing matching guest details
-    // Or an unauthenticated user (though this route is JWT protected, so userId will usually be present)
-    isAuthorized = true;
-  } else if (userId && booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
-    // Authenticated user deleting an unauthenticated booking they made, providing guest details
     isAuthorized = true;
   }
 

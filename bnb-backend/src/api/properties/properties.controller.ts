@@ -1,5 +1,6 @@
 import { type Context } from "hono";
 import * as propertyService from "./properties.service.js";
+import type { Property } from "../../models/property.model.js";
 
 export const getPropertiesController = async (c: Context) => {
   const data = await propertyService.getProperties();
