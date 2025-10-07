@@ -4,8 +4,8 @@ import * as bookingService from "./bookings.service.js";
 export const createBookingController = async (c: Context) => {
   try {
     const body = await c.req.json();
-    const payload = c.get("jwtPayload");
-    const userId = payload.sub;
+    const payload = c.get("jwtPayload"); // This might be undefined if not authenticated
+    const userId = payload ? payload.sub : null; // Get userId if authenticated, else null
     const data = await bookingService.createBooking(body, userId);
     return c.json(data, 201);
   } catch (error: any) {
@@ -40,8 +40,9 @@ export const deleteBookingController = async (c: Context) => {
   try {
     const { id } = c.req.param();
     const payload = c.get("jwtPayload");
-    const userId = payload.sub;
-    const data = await bookingService.deleteBooking(id, userId);
+    const userId = payload ? payload.sub : null;
+    const { guestEmail, guestPhoneNumber } = await c.req.json<{ guestEmail?: string; guestPhoneNumber?: string }>();
+    const data = await bookingService.deleteBooking(id, userId, guestEmail, guestPhoneNumber);
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);

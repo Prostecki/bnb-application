@@ -9,11 +9,12 @@ import { jwtMiddleware } from "../../middleware/jwt.js";
 
 const bookingsRouter = new Hono();
 
-bookingsRouter.use("/*", jwtMiddleware);
-
-bookingsRouter.get("/", getBookingsController);
-bookingsRouter.get("/:id", getBookingByIdController);
+// Route for creating booking (no authentication required)
 bookingsRouter.post("/", createBookingController);
-bookingsRouter.delete("/:id", deleteBookingController);
+
+// Routes that require authentication
+bookingsRouter.get("/", jwtMiddleware, getBookingsController);
+bookingsRouter.get("/:id", jwtMiddleware, getBookingByIdController);
+bookingsRouter.delete("/:id", jwtMiddleware, deleteBookingController);
 
 export default bookingsRouter;

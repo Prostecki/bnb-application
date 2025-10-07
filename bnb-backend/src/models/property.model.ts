@@ -4,7 +4,8 @@ export interface Property {
   description: string;
   location: string;
   pricePerNight: number;
+  pricePerExtraGuest: number;
   availability: Date[]; // Represents an array of available dates
   imageUrl: string;
-  user_id: string;
+  userId: string;
 }

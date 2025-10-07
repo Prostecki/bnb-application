@@ -23,7 +23,7 @@ export const getPropertyById = async (id: string) => {
 };
 
 export const createProperty = async (
-  property: Omit<Property, "id" | "user_id">,
+  property: Omit<Property, "id" | "userId">,
   userId: string
 ) => {
   const propertyToCreate = { ...property, user_id: userId };

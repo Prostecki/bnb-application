@@ -13,7 +13,7 @@ export const getPropertyByIdController = async (c: Context) => {
 };
 
 export const createPropertyController = async (c: Context) => {
-  const body = await c.req.json();
+  const body = await c.req.json<Omit<Property, "id" | "userId">>();
   const payload = c.get("jwtPayload");
   const userId = payload.sub;
   const data = await propertyService.createProperty(body, userId);
@@ -22,7 +22,7 @@ export const createPropertyController = async (c: Context) => {
 
 export const updatePropertyController = async (c: Context) => {
   const { id } = c.req.param();
-  const body = await c.req.json();
+  const body = await c.req.json<Partial<Property>>();
   const payload = c.get("jwtPayload");
   const userId = payload.sub;
   const data = await propertyService.updateProperty(id, body, userId);

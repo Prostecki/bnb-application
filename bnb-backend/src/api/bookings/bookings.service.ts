@@ -14,16 +14,43 @@ const calculateNights = (checkIn: string, checkOut: string): number => {
 };
 
 export const createBooking = async (
-  // Pick<T, value> - it's like Omit, but Omit excludes properties, and Pick takes in only those which you need
-  bookingData: Pick<Booking, "propertyId" | "checkInDate" | "checkOutDate">,
-  userId: string
+  bookingData: Pick<
+    Booking,
+    | "propertyId"
+    | "checkInDate"
+    | "checkOutDate"
+    | "numberOfGuests"
+    | "guestEmail"
+    | "guestFullName"
+    | "guestPhoneNumber"
+  >,
+  userId: string | null // Accept optional userId
 ) => {
-  const { propertyId, checkInDate, checkOutDate } = bookingData;
+  const {
+    propertyId,
+    checkInDate,
+    checkOutDate,
+    numberOfGuests,
+    guestEmail,
+    guestFullName,
+    guestPhoneNumber,
+  } = bookingData;
 
-  // 1. Fetch the property to get the price per night
+  if (!checkInDate || !checkOutDate) {
+    throw new Error("Check-in date and check-out date are required.");
+  }
+  if (numberOfGuests <= 0) {
+    throw new Error("Number of guests must be at least 1.");
+  }
+  // Guest details are only required if userId is null (unauthenticated booking)
+  if (!userId && (!guestEmail || !guestFullName || !guestPhoneNumber)) {
+    throw new Error("Guest email, full name, and phone number are required for unauthenticated bookings.");
+  }
+
+  // 1. Fetch the property to get the price per night and price per extra guest
   const { data: property, error: propertyError } = await supabase
     .from("properties")
-    .select("pricePerNight")
+    .select("price_per_night, price_per_extra_guest")
     .eq("id", propertyId)
     .single();
 
@@ -36,15 +63,25 @@ export const createBooking = async (
     checkInDate.toString(),
     checkOutDate.toString()
   );
-  const totalPrice = numberOfNights * property.pricePerNight;
+
+  let basePrice = property.price_per_night;
+  if (numberOfGuests > 1) {
+    basePrice += (numberOfGuests - 1) * property.price_per_extra_guest;
+  }
+
+  const totalPrice = numberOfNights * basePrice;
 
   // 3. Create the new booking object
   const newBooking = {
-    propertyId,
-    userId,
-    checkInDate,
-    checkOutDate,
-    totalPrice,
+    property_id: propertyId,
+    user_id: userId, // Use provided userId or null
+    check_in_date: checkInDate,
+    check_out_date: checkOutDate,
+    number_of_guests: numberOfGuests,
+    total_price: totalPrice,
+    guest_email: guestEmail || null, // Store guest details if userId is null
+    guest_full_name: guestFullName || null,
+    guest_phone_number: guestPhoneNumber || null,
   };
 
   // 4. Insert the booking into the database
@@ -64,7 +101,7 @@ export const getBookings = async (userId: string) => {
   const { data, error } = await supabase
     .from("bookings")
     .select("*, properties(*)")
-    .eq("userId", userId);
+    .eq("user_id", userId);
 
   if (error) {
     throw new Error(error.message);
@@ -77,7 +114,7 @@ export const getBookingById = async (id: string, userId: string) => {
     .from("bookings")
     .select("*, properties(*)")
     .eq("id", id)
-    .eq("userId", userId)
+    .eq("user_id", userId)
     .single();
 
   if (error) {
@@ -86,12 +123,56 @@ export const getBookingById = async (id: string, userId: string) => {
   return data;
 };
 
-export const deleteBooking = async (id: string, userId: string) => {
-  const { data, error } = await supabase
+export const deleteBooking = async (
+  id: string,
+  userId: string | null,
+  guestEmail?: string,
+  guestPhoneNumber?: string
+) => {
+  console.log("deleteBooking: id=", id, "userId=", userId, "guestEmail=", guestEmail, "guestPhoneNumber=", guestPhoneNumber);
+
+  // 1. Fetch the booking by ID first
+  const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .delete()
+    .select("check_in_date, user_id, guest_email, guest_phone_number")
     .eq("id", id)
-    .eq("userId", userId);
+    .single();
+
+  if (fetchError || !booking) {
+    console.error("deleteBooking: Fetch error or booking not found:", fetchError?.message);
+    throw new Error(fetchError?.message || "Booking not found.");
+  }
+
+  // 2. Apply authorization logic
+  let isAuthorized = false;
+  if (userId && booking.user_id === userId) {
+    // Authenticated user deleting their own booking
+    isAuthorized = true;
+  } else if (!userId && booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
+    // Unauthenticated booking, being deleted by an authenticated user providing matching guest details
+    // Or an unauthenticated user (though this route is JWT protected, so userId will usually be present)
+    isAuthorized = true;
+  } else if (userId && booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
+    // Authenticated user deleting an unauthenticated booking they made, providing guest details
+    isAuthorized = true;
+  }
+
+  if (!isAuthorized) {
+    throw new Error("You are not authorized to delete this booking.");
+  }
+
+  // 3. Check cancellation policy
+  const checkInDate = new Date(booking.check_in_date);
+  const now = new Date();
+  const timeDifference = checkInDate.getTime() - now.getTime(); // Difference in milliseconds
+  const hoursDifference = timeDifference / (1000 * 3600);
+
+  if (hoursDifference < 48) {
+    throw new Error("Booking cannot be cancelled within 48 hours of check-in.");
+  }
+
+  // 4. If authorized and within cancellation window, delete the booking
+  const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 
   if (error) {
     throw new Error(error.message);

@@ -6,9 +6,13 @@ export interface Booking {
   createdAt: Date;
   checkInDate: Date;
   checkOutDate: Date;
+  numberOfGuests: number;
   totalPrice: number;
-  userId: number;
+  userId?: string; // Make userId optional for unauthenticated bookings
   propertyId: number;
+  guestEmail: string;
+  guestFullName: string;
+  guestPhoneNumber: string;
   user?: User;
   property?: Property;
 }
