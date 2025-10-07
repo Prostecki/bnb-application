@@ -1,26 +1,35 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const RegisterPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { isAuthenticated, login } = useAuth();
+
+  // Если пользователь уже залогинен, перенаправляем его
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/profile");
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/signup', {
-        method: 'POST',
+      const res = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
       });
@@ -28,18 +37,20 @@ const RegisterPage = () => {
       if (res.ok) {
         const data = await res.json();
         if (data.session && data.session.access_token) {
-          localStorage.setItem('token', data.session.access_token); // Store the token
-          router.push('/profile'); // Redirect to profile page
+          localStorage.setItem("token", data.session.access_token);
+          login(data.user); // Передаем данные пользователя в контекст
+          router.push("/profile");
         } else {
-          // Handle case where signup is successful but no session is returned (e.g., email confirmation required)
-          setError('Registration successful, but failed to log in. Please try logging in manually.');
+          setError(
+            "Registration successful, but failed to log in. Please try logging in manually."
+          );
         }
       } else {
         const data = await res.json();
-        setError(data.message || 'Registration failed.');
+        setError(data.message || "Registration failed.");
       }
     } catch (err) {
-      setError('An unexpected error occurred.');
+      setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -86,8 +97,12 @@ const RegisterPage = () => {
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
+        >
+          {loading ? "Registering..." : "Register"}
         </button>
       </form>
     </div>

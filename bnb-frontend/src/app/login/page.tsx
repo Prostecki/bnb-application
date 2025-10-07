@@ -1,25 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react"; // Добавляем useEffect
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext"; // Импортируем useAuth
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { isAuthenticated, login } = useAuth(); // Используем useAuth
+
+  // Если пользователь уже залогинен, перенаправляем его
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/profile"); // Или на другую страницу
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/signin', {
-        method: 'POST',
+      const res = await fetch("http://localhost:3000/api/auth/signin", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -27,17 +36,20 @@ const LoginPage = () => {
       if (res.ok) {
         const data = await res.json();
         if (data.session && data.session.access_token) {
-          localStorage.setItem('token', data.session.access_token);
-          router.push('/profile');
+          localStorage.setItem("token", data.session.access_token);
+          login(data.user); // Передаем данные пользователя в контекст
+          router.push("/profile");
         } else {
-          setError('Login successful, but no session returned.');
+          setError("Login successful, but no session returned.");
         }
       } else {
         const data = await res.json();
-        setError(data.message || 'Login failed. Please check your credentials.');
+        setError(
+          data.message || "Login failed. Please check your credentials."
+        );
       }
     } catch (err) {
-      setError('An unexpected error occurred.');
+      setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -72,8 +84,12 @@ const LoginPage = () => {
           />
         </div>
         {error && <p className="text-red-500">{error}</p>}
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

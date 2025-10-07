@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 // Mock data types - in a real app, these would be imported from a model file
 interface Booking {
@@ -25,31 +26,28 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { isAuthenticated, logout, user, loading: authLoading } = useAuth();
 
-  const handleSignOut = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  // Проверяем аутентификацию и перенаправляем если не авторизован
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+  }, [isAuthenticated, router, authLoading]);
 
-    // Call backend to invalidate the session
-    await fetch("http://localhost:3000/api/auth/signout", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // Clear local storage and redirect
-    localStorage.removeItem("token");
-    router.push("/login"); // Redirect to login after sign out
+  const handleSignOut = () => {
+    logout(); // Используем функцию из AuthContext
   };
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!isAuthenticated) return;
+
       setLoading(true);
       setError("");
 
       try {
-        // This assumes a JWT is stored in localStorage after login
         const token = localStorage.getItem("token");
         if (!token) {
           setError("You are not authenticated.");
@@ -84,7 +82,14 @@ const ProfilePage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
+
+  // Показываем загрузку пока проверяется аутентификация
+  if (authLoading) {
+    return (
+      <div className="container mx-auto p-4">Loading authentication...</div>
+    );
+  }
 
   if (loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
@@ -97,13 +102,15 @@ const ProfilePage = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">My Profile</h1>
-        <button
+        <h1 className="text-3xl font-bold">
+          Welcome, {user?.name || user?.email || "User"}!
+        </h1>
+        {/* <button
           onClick={handleSignOut}
           className="bg-red-500 text-white p-2 rounded"
         >
           Sign Out
-        </button>
+        </button> */}
       </div>
 
       <section>
@@ -125,7 +132,7 @@ const ProfilePage = () => {
         )}
       </section>
 
-      <section className="mt-8">
+      {/* <section className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">My Properties</h2>
         {properties.length > 0 ? (
           <ul>
@@ -137,9 +144,9 @@ const ProfilePage = () => {
             ))}
           </ul>
         ) : (
-          <p>Пропертис не зарегистрированы.</p>
+          <p>Properties not registered</p>
         )}
-      </section>
+      </section> */}
     </div>
   );
 };

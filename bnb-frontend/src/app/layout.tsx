@@ -1,10 +1,34 @@
-import type { Metadata } from "next";
+"use client"; // Добавляем эту строку в самом начале файла
+
 import { Header } from "@/components/layout/Header";
 import "./globals.css";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
 
-export const metadata: Metadata = {
-  title: "BNB App",
-  description: "BNB Application",
+// Удаляем экспорт metadata
+// export const metadata: Metadata = {
+//   title: "BNB App",
+//   description: "BNB Application",
+// };
+
+// Создаем отдельный компонент для рендеринга содержимого, чтобы использовать useAuth
+const AppContent = ({ children }: { children: React.ReactNode }) => {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  );
 };
 
 export default function RootLayout({
@@ -15,8 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        {children}
+        <AuthProvider>
+          <AppContent>{children}</AppContent>
+        </AuthProvider>
       </body>
     </html>
   );
