@@ -23,13 +23,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Проверяем токен при загрузке приложения
+  // Check token when application loads
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          // Проверяем валидность токена и получаем данные пользователя
+          // Check token validity and get user data
           try {
             const response = await fetch("http://localhost:3000/api/auth/me", {
               headers: {
@@ -43,14 +43,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setUser(userData);
               setIsAuthenticated(true);
             } else {
-              // Токен недействителен
+              // Token is invalid
               localStorage.removeItem("token");
               setIsAuthenticated(false);
               setUser(null);
             }
           } catch (apiError) {
             console.error("Error verifying token:", apiError);
-            // Если API недоступен, но токен есть, считаем пользователя авторизованным
+            // If API is unavailable but token exists, consider user authenticated
             setIsAuthenticated(true);
           }
         }
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     const token = localStorage.getItem("token");
 
-    // Вызываем API для инвалидации сессии на сервере
+    // Call API to invalidate session on server
     if (token) {
       try {
         await fetch("http://localhost:3000/api/auth/signout", {
@@ -91,12 +91,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    // Очищаем локальное состояние
+    // Clear local state
     setIsAuthenticated(false);
     setUser(null);
     localStorage.removeItem("token");
 
-    // Перенаправляем на страницу входа
+    // Redirect to login page
     window.location.href = "/login";
   };
 

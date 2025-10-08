@@ -1,7 +1,7 @@
-"use client"; // Добавляем 'use client' так как используем хуки
+"use client"; // Adding 'use client' since we use hooks
 
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext"; // Импортируем useAuth
+import { useAuth } from "@/context/AuthContext"; // Import useAuth
 
 export const Navigation = () => {
   const { isAuthenticated, logout, loading } = useAuth();

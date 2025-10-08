@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface Property {
   id: string;
   title: string;
   description: string;
+  image_url: string;
 }
 
 const PropertiesPage = () => {
@@ -51,10 +53,17 @@ const PropertiesPage = () => {
       {properties.length > 0 ? (
         <ul>
           {properties.map((property) => (
-            <li key={property.id} className="border p-4 rounded mb-4">
-              <h2 className="text-2xl font-semibold">{property.title}</h2>
-              <p>{property.description}</p>
-            </li>
+            <Link href={`/properties/${property.id}`} key={property.id}>
+              <li className="border p-4 rounded mb-4 cursor-pointer hover:bg-gray-100 transition-colors">
+                <h2 className="text-2xl font-semibold">{property.title}</h2>
+                <p>{property.description}</p>
+                <img
+                  src={property.image_url}
+                  alt={`Image of ${property.title}`}
+                  className="mt-2 rounded"
+                />
+              </li>
+            </Link>
           ))}
         </ul>
       ) : (

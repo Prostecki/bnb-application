@@ -35,7 +35,7 @@ export const signUpUser = async (credentials: UserCredentials) => {
     throw new Error("Failed to create user profile after signup.");
   }
 
-  // Добавляем информацию о пользователе к ответу
+  // Add user information to response
   return {
     ...authData,
     user: {
@@ -64,7 +64,7 @@ export const signInUser = async (
     throw new Error(error.message);
   }
 
-  // Получаем информацию о пользователе из таблицы users
+  // Get user information from users table
   if (data.user) {
     try {
       const { data: userData, error: userError } = await supabase
@@ -74,7 +74,7 @@ export const signInUser = async (
         .single();
 
       if (!userError && userData) {
-        // Добавляем информацию о пользователе к ответу
+        // Add user information to response
         return {
           ...data,
           user: {
@@ -112,7 +112,7 @@ export const signOutService = async () => {
 
 export const getCurrentUser = async (accessToken: string) => {
   try {
-    // Получаем пользователя из Supabase Auth используя токен
+    // Get user from Supabase Auth using token
     const { data: authUser, error: authError } = await supabase.auth.getUser(
       accessToken
     );
@@ -121,7 +121,7 @@ export const getCurrentUser = async (accessToken: string) => {
       throw new Error("Invalid or expired token");
     }
 
-    // Получаем дополнительную информацию о пользователе из таблицы users
+    // Get additional user information from users table
     const { data: userData, error: userError } = await supabase
       .from("users")
       .select("id, name, email, is_admin")
@@ -130,7 +130,7 @@ export const getCurrentUser = async (accessToken: string) => {
 
     if (userError) {
       console.error("Error fetching user data:", userError);
-      // Если не удалось получить данные из таблицы users, возвращаем базовую информацию
+      // If couldn't get data from users table, return basic information
       return {
         id: authUser.user.id,
         email: authUser.user.email,

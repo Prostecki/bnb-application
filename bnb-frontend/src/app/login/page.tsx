@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Добавляем useEffect
+import { useState, useEffect } from "react"; // Adding useEffect
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"; // Импортируем useAuth
+import { useAuth } from "@/context/AuthContext"; // Import useAuth
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +10,12 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, login } = useAuth(); // Используем useAuth
+  const { isAuthenticated, login } = useAuth(); // Using useAuth
 
-  // Если пользователь уже залогинен, перенаправляем его
+  // If user is already logged in, redirect them
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/profile"); // Или на другую страницу
+      router.push("/profile"); // Or to another page
     }
   }, [isAuthenticated, router]);
 
@@ -37,7 +37,7 @@ const LoginPage = () => {
         const data = await res.json();
         if (data.session && data.session.access_token) {
           localStorage.setItem("token", data.session.access_token);
-          login(data.user); // Передаем данные пользователя в контекст
+          login(data.user); // Pass user data to context
           router.push("/profile");
         } else {
           setError("Login successful, but no session returned.");

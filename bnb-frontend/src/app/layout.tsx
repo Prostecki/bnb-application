@@ -1,17 +1,17 @@
-"use client"; // Добавляем эту строку в самом начале файла
+"use client"; // Adding this line at the very beginning of the file
 
 import { Header } from "@/components/layout/Header";
 import "./globals.css";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 
-// Удаляем экспорт metadata
+// Remove metadata export
 // export const metadata: Metadata = {
 //   title: "BNB App",
 //   description: "BNB Application",
 // };
 
-// Создаем отдельный компонент для рендеринга содержимого, чтобы использовать useAuth
+// Create a separate component for rendering content to use useAuth
 const AppContent = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
 

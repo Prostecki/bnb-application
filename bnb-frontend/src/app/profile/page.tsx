@@ -28,7 +28,7 @@ const ProfilePage = () => {
   const router = useRouter();
   const { isAuthenticated, logout, user, loading: authLoading } = useAuth();
 
-  // Проверяем аутентификацию и перенаправляем если не авторизован
+  // Check authentication and redirect if not authorized
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");
@@ -37,7 +37,7 @@ const ProfilePage = () => {
   }, [isAuthenticated, router, authLoading]);
 
   const handleSignOut = () => {
-    logout(); // Используем функцию из AuthContext
+    logout(); // Use function from AuthContext
   };
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const ProfilePage = () => {
     fetchData();
   }, [isAuthenticated]);
 
-  // Показываем загрузку пока проверяется аутентификация
+  // Show loading while authentication is being checked
   if (authLoading) {
     return (
       <div className="container mx-auto p-4">Loading authentication...</div>
@@ -105,12 +105,6 @@ const ProfilePage = () => {
         <h1 className="text-3xl font-bold">
           Welcome, {user?.name || user?.email || "User"}!
         </h1>
-        {/* <button
-          onClick={handleSignOut}
-          className="bg-red-500 text-white p-2 rounded"
-        >
-          Sign Out
-        </button> */}
       </div>
 
       <section>

@@ -64,17 +64,16 @@ export const signOutController = async (c: Context) => {
 
 export const getMeController = async (c: Context) => {
   try {
-    // Получаем токен из заголовка Authorization
+    // Get token from Authorization header
     const authHeader = c.req.header("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return c.json({ error: "Authorization token required" }, 401);
     }
 
-    const token = authHeader.substring(7); // Убираем "Bearer "
+    const token = authHeader.substring(7); // Remove "Bearer "
 
-    // Получаем актуальные данные пользователя из базы данных
+    // Get actual user data from database
     const userData = await getCurrentUser(token);
-
     return c.json({
       id: userData.id,
       name: userData.name,

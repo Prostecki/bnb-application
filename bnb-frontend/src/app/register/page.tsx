@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const router = useRouter();
   const { isAuthenticated, login } = useAuth();
 
-  // Если пользователь уже залогинен, перенаправляем его
+  // If user is already logged in, redirect them
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/profile");
@@ -38,7 +38,7 @@ const RegisterPage = () => {
         const data = await res.json();
         if (data.session && data.session.access_token) {
           localStorage.setItem("token", data.session.access_token);
-          login(data.user); // Передаем данные пользователя в контекст
+          login(data.user); // Pass user data to context
           router.push("/profile");
         } else {
           setError(
