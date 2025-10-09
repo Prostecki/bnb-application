@@ -7,16 +7,16 @@ import { useAuth } from "@/context/AuthContext";
 // Mock data types - in a real app, these would be imported from a model file
 interface Booking {
   id: string;
-  property: {
-    title: string;
+  properties: {
+    name: string;
   };
-  startDate: string;
-  endDate: string;
+  check_in_date: string;
+  check_out_date: string;
 }
 
 interface Property {
   id: string;
-  title: string;
+  name: string;
   description: string;
 }
 
@@ -113,10 +113,10 @@ const ProfilePage = () => {
           <ul>
             {bookings.map((booking) => (
               <li key={booking.id} className="border p-2 rounded mb-2">
-                <p>{booking.property.title}</p>
+                <p>{booking.properties?.name}</p>
                 <p className="text-sm text-gray-500">
-                  {new Date(booking.startDate).toLocaleDateString()} -{" "}
-                  {new Date(booking.endDate).toLocaleDateString()}
+                  {new Date(booking.check_in_date).toLocaleDateString()} -{" "}
+                  {new Date(booking.check_out_date).toLocaleDateString()}
                 </p>
               </li>
             ))}

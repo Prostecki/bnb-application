@@ -5,7 +5,7 @@ import Link from "next/link";
 
 interface Property {
   id: string;
-  title: string;
+  name: string;
   description: string;
   image_url: string;
 }
@@ -51,21 +51,30 @@ const PropertiesPage = () => {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Available Properties</h1>
       {properties.length > 0 ? (
-        <ul>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <Link href={`/properties/${property.id}`} key={property.id}>
-              <li className="border p-4 rounded mb-4 cursor-pointer hover:bg-gray-100 transition-colors">
-                <h2 className="text-2xl font-semibold">{property.title}</h2>
-                <p>{property.description}</p>
+            <Link
+              href={`/properties/${property.id}`}
+              key={property.id}
+              className="block card card-compact w-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+            >
+              <figure>
                 <img
                   src={property.image_url}
-                  alt={`Image of ${property.title}`}
-                  className="mt-2 rounded"
+                  alt={property.name}
+                  className="h-48 w-full object-cover"
                 />
-              </li>
+              </figure>
+              <div className="card-body">
+                <h2 className="card-title">{property.name}</h2>
+                <p className="truncate">{property.description}</p>
+                <div className="card-actions justify-end">
+                  <span className="btn btn-primary">View</span>
+                </div>
+              </div>
             </Link>
           ))}
-        </ul>
+        </div>
       ) : (
         <p>No properties available at the moment.</p>
       )}
