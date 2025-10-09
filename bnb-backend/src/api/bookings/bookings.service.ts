@@ -14,87 +14,163 @@ const calculateNights = (checkIn: string, checkOut: string): number => {
 };
 
 export const createBooking = async (
+
   bookingData: Pick<
+
     Booking,
-    | "propertyId"
+
+    |
+
+      "propertyId"
+
     | "checkInDate"
+
     | "checkOutDate"
+
     | "numberOfGuests"
+
     | "guestEmail"
+
     | "guestFullName"
+
     | "guestPhoneNumber"
+
   >,
-  userId: string | null // Accept optional userId
+
+  userId: string // userId is now mandatory
+
 ) => {
+
   const {
+
     propertyId,
+
     checkInDate,
+
     checkOutDate,
+
     numberOfGuests,
+
     guestEmail,
+
     guestFullName,
+
     guestPhoneNumber,
+
   } = bookingData;
 
+
+
   if (!checkInDate || !checkOutDate) {
+
     throw new Error("Check-in date and check-out date are required.");
+
   }
+
   if (numberOfGuests <= 0) {
+
     throw new Error("Number of guests must be at least 1.");
+
   }
-  // Guest details are only required if userId is null (unauthenticated booking)
-  if (!userId && (!guestEmail || !guestFullName || !guestPhoneNumber)) {
-    throw new Error("Guest email, full name, and phone number are required for unauthenticated bookings.");
-  }
+
+
 
   // 1. Fetch the property to get the price per night and price per extra guest
+
   const { data: property, error: propertyError } = await supabase
+
     .from("properties")
+
     .select("price_per_night, price_per_extra_guest")
+
     .eq("id", propertyId)
+
     .single();
 
+
+
   if (propertyError || !property) {
+
     throw new Error(propertyError?.message || "Property not found.");
+
   }
+
+
 
   // 2. Calculate the total price
+
   const numberOfNights = calculateNights(
+
     checkInDate.toString(),
+
     checkOutDate.toString()
+
   );
 
+
+
   let basePrice = property.price_per_night;
+
   if (numberOfGuests > 1) {
+
     basePrice += (numberOfGuests - 1) * property.price_per_extra_guest;
+
   }
+
+
 
   const totalPrice = numberOfNights * basePrice;
 
+
+
   // 3. Create the new booking object
+
   const newBooking = {
+
     property_id: propertyId,
-    user_id: userId, // Use provided userId or null
+
+    user_id: userId,
+
     check_in_date: checkInDate,
+
     check_out_date: checkOutDate,
+
     number_of_guests: numberOfGuests,
+
     total_price: totalPrice,
-    guest_email: guestEmail || null, // Store guest details if userId is null
-    guest_full_name: guestFullName || null,
-    guest_phone_number: guestPhoneNumber || null,
+
+    guest_email: guestEmail,
+
+    guest_full_name: guestFullName,
+
+    guest_phone_number: guestPhoneNumber,
+
   };
 
+
+
   // 4. Insert the booking into the database
+
   const { data, error } = await supabase
+
     .from("bookings")
+
     .insert([newBooking])
+
     .select();
 
+
+
   if (error) {
+
     throw new Error(error.message);
+
   }
 
+
+
   return data;
+
 };
 
 export const getBookings = async (userId: string) => {

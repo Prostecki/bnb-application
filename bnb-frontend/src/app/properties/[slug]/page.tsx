@@ -1,28 +1,61 @@
-async function getPropertyData(slug: string) {
-  const res = await fetch(`http://localhost:3000/api/properties/${slug}`);
-  if (!res.ok) {
-    return null;
-  }
-  return res.json();
-}
+"use client";
 
-export default async function PropertyDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const property = await getPropertyData(params.slug);
+import { useRef } from "react";
+import { useParams } from "next/navigation";
+import BookingModal from "../../../components/properties/BookingModal";
+import PropertyDetailCard from "../../../components/properties/PropertyDetailCard";
+import { useProperty } from "../../../hooks/useProperty";
+
+export default function PropertyDetailPage() {
+  const modalRef = useRef<HTMLDialogElement>(null);
+  const params = useParams();
+  const slug = typeof params.slug === "string" ? params.slug : "";
+  const { property, loading, error } = useProperty(slug);
+
+  if (loading) {
+    return <div className="container mx-auto p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="container mx-auto p-4">{error}</div>;
+  }
 
   if (!property) {
-    return <div>Property not found.</div>;
+    return <div className="container mx-auto p-4">Property not found.</div>;
   }
 
   return (
-    <div>
-      <h1>{property.name}</h1>
-      <p>{property.description}</p>
-      <p>Price: ${property.price_per_night}/night</p>
-      <img src={property.image_url} alt="" />
-    </div>
+    <>
+      <main>
+        <div
+          className="hero min-h-[40vh]"
+          style={{ backgroundImage: `url(${property.image_url})` }}
+        >
+          <div className="hero-overlay bg-opacity-60"></div>
+          <div className="hero-content text-center text-neutral-content">
+            <div className="max-w-md">
+              <h1 className="mb-5 text-5xl font-bold">{property.name}</h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto p-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <h2 className="text-2xl font-bold mb-4">Description</h2>
+              <p>{property.description}</p>
+            </div>
+            <div>
+              <PropertyDetailCard
+                price_per_night={property.price_per_night}
+                onBookNowClick={() => modalRef.current?.showModal()}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <BookingModal propertyId={property.id} modalRef={modalRef} />
+    </>
   );
 }
