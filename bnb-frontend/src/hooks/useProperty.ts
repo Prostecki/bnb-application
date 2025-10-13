@@ -6,8 +6,8 @@ interface Property {
   id: string;
   name: string;
   description: string;
-  price_per_night: number;
-  image_url: string;
+  pricePerNight: number;
+  imageUrl: string;
 }
 
 export function useProperty(slug: string) {

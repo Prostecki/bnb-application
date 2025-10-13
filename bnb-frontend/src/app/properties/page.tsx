@@ -7,7 +7,9 @@ interface Property {
   id: string;
   name: string;
   description: string;
-  image_url: string;
+  imageUrl: string; // Changed from image_url
+  location: string;
+  pricePerNight: number;
 }
 
 const PropertiesPage = () => {
@@ -60,7 +62,7 @@ const PropertiesPage = () => {
             >
               <figure>
                 <img
-                  src={property.image_url}
+                  src={property.imageUrl} // Changed from image_url
                   alt={property.name}
                   className="h-48 w-full object-cover"
                 />

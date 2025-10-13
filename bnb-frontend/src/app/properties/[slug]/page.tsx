@@ -29,7 +29,7 @@ export default function PropertyDetailPage() {
       <main>
         <div
           className="hero min-h-[40vh]"
-          style={{ backgroundImage: `url(${property.image_url})` }}
+          style={{ backgroundImage: `url(${property.imageUrl})` }}
         >
           <div className="hero-overlay bg-opacity-60"></div>
           <div className="hero-content text-center text-neutral-content">
@@ -47,7 +47,7 @@ export default function PropertyDetailPage() {
             </div>
             <div>
               <PropertyDetailCard
-                price_per_night={property.price_per_night}
+                pricePerNight={property.pricePerNight}
                 onBookNowClick={() => modalRef.current?.showModal()}
               />
             </div>
