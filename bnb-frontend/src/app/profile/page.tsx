@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
+import EditPropertyModal from "@/components/properties/EditPropertyModal";
 
 // Match the backend model
 interface Property {
@@ -33,10 +34,10 @@ const ProfilePage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [addProperty, setAddProperty] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
-
-  const [addProperty, setAddProperty] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -91,6 +92,11 @@ const ProfilePage = () => {
     fetchUserData();
   }, [fetchUserData]);
 
+  const handlePropertyUpdated = () => {
+    fetchUserData();
+    setEditingProperty(null);
+  };
+
   if (authLoading) {
     return (
       <div className="container mx-auto p-4">Loading authentication...</div>
@@ -131,6 +137,14 @@ const ProfilePage = () => {
                   <div className="mt-4 font-semibold">
                     <p>Price per night: ${property.pricePerNight}</p>
                     <p>Price per extra guest: ${property.pricePerExtraGuest}</p>
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setEditingProperty(property)}
+                      className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
                   </div>
                 </li>
               ))}
@@ -186,6 +200,14 @@ const ProfilePage = () => {
         <div className="mt-12">
           <CreatePropertyForm onPropertyCreated={fetchUserData} />
         </div>
+      )}
+
+      {editingProperty && (
+        <EditPropertyModal
+          property={editingProperty}
+          onClose={() => setEditingProperty(null)}
+          onPropertyUpdated={handlePropertyUpdated}
+        />
       )}
     </div>
   );

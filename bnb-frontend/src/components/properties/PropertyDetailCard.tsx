@@ -3,12 +3,12 @@
 import { useAuth } from "../../context/AuthContext";
 
 interface PropertyDetailCardProps {
-  price_per_night: number;
+  pricePerNight: number;
   onBookNowClick: () => void;
 }
 
 export default function PropertyDetailCard({
-  price_per_night,
+  pricePerNight,
   onBookNowClick,
 }: PropertyDetailCardProps) {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -18,7 +18,7 @@ export default function PropertyDetailCard({
       <div className="card-body">
         <h2 className="card-title">Booking</h2>
         <p className="text-lg font-semibold">
-          Price: ${price_per_night} / night
+          Price: ${pricePerNight} / night
         </p>
         <div className="card-actions justify-end">
           {isAuthenticated ? (
