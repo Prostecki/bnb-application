@@ -13,10 +13,14 @@ const propertiesRouter = new Hono();
 
 // Public routes
 propertiesRouter.get("/", getPropertiesController);
-propertiesRouter.get("/:id", getPropertyByIdController);
 
 // Protected routes
 propertiesRouter.get("/me", jwtMiddleware, getMyPropertiesController);
+
+// Public routes
+propertiesRouter.get("/:id", getPropertyByIdController);
+
+// Protected routes
 propertiesRouter.post("/", jwtMiddleware, createPropertyController);
 propertiesRouter.put("/:id", jwtMiddleware, updatePropertyController);
 propertiesRouter.delete("/:id", jwtMiddleware, deletePropertyController);

@@ -20,6 +20,8 @@ export default function BookingModal({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -88,6 +90,7 @@ export default function BookingModal({
               type="date"
               className="input input-bordered"
               value={checkInDate}
+              min={today}
               onChange={(e) => setCheckInDate(e.target.value)}
               required
             />
@@ -100,6 +103,7 @@ export default function BookingModal({
               type="date"
               className="input input-bordered"
               value={checkOutDate}
+              min={checkInDate || today}
               onChange={(e) => setCheckOutDate(e.target.value)}
               required
             />

@@ -1,12 +1,35 @@
 import { supabase } from "../../lib/supabase.js";
 import type { Property } from "../../models/property.model.js";
 
+interface PropertyFromDb {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  price_per_night: number;
+  price_per_extra_guest: number;
+  image_url: string;
+  user_id: string;
+}
+
+const mapToCamelCase = (property: PropertyFromDb): Property => ({
+  id: property.id,
+  name: property.name,
+  description: property.description,
+  location: property.location,
+  pricePerNight: property.price_per_night,
+  pricePerExtraGuest: property.price_per_extra_guest,
+  imageUrl: property.image_url,
+  userId: property.user_id,
+  availability: [], // Assuming availability is not stored directly
+});
+
 export const getProperties = async () => {
   const { data, error } = await supabase.from("properties").select("*");
   if (error) {
     throw new Error(error.message);
   }
-  return data;
+  return data.map(mapToCamelCase);
 };
 
 export const getPropertiesByUserId = async (userId: string) => {
@@ -17,7 +40,7 @@ export const getPropertiesByUserId = async (userId: string) => {
   if (error) {
     throw new Error(error.message);
   }
-  return data;
+  return data.map(mapToCamelCase);
 };
 
 export const getPropertyById = async (id: string) => {
@@ -30,14 +53,30 @@ export const getPropertyById = async (id: string) => {
   if (error) {
     throw new Error(error.message);
   }
-  return data;
+  return mapToCamelCase(data);
 };
 
 export const createProperty = async (
   property: Omit<Property, "id" | "userId">,
   userId: string
 ) => {
-  const propertyToCreate = { ...property, user_id: userId };
+  const {
+    name,
+    description,
+    location,
+    pricePerNight,
+    pricePerExtraGuest,
+    imageUrl,
+  } = property;
+  const propertyToCreate = {
+    name,
+    description,
+    location,
+    price_per_night: pricePerNight,
+    price_per_extra_guest: pricePerExtraGuest,
+    image_url: imageUrl,
+    user_id: userId,
+  };
   const { data, error } = await supabase
     .from("properties")
     .insert([propertyToCreate])
@@ -69,10 +108,27 @@ export const updateProperty = async (
     throw new Error("You are not authorized to update this property.");
   }
 
+  const {
+    name,
+    description,
+    location,
+    pricePerNight,
+    pricePerExtraGuest,
+    imageUrl,
+  } = property;
+  const propertyToUpdate = {
+    name,
+    description,
+    location,
+    price_per_night: pricePerNight,
+    price_per_extra_guest: pricePerExtraGuest,
+    image_url: imageUrl,
+  };
+
   // If authorized, update the property
   const { data, error } = await supabase
     .from("properties")
-    .update(property)
+    .update(propertyToUpdate)
     .eq("id", id)
     .select();
 

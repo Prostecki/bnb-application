@@ -14,163 +14,88 @@ const calculateNights = (checkIn: string, checkOut: string): number => {
 };
 
 export const createBooking = async (
-
   bookingData: Pick<
-
     Booking,
-
-    |
-
-      "propertyId"
-
+    | "propertyId"
     | "checkInDate"
-
     | "checkOutDate"
-
     | "numberOfGuests"
-
     | "guestEmail"
-
     | "guestFullName"
-
     | "guestPhoneNumber"
-
   >,
 
   userId: string // userId is now mandatory
-
 ) => {
-
   const {
-
     propertyId,
-
     checkInDate,
-
     checkOutDate,
-
     numberOfGuests,
-
     guestEmail,
-
     guestFullName,
-
     guestPhoneNumber,
-
   } = bookingData;
 
-
-
   if (!checkInDate || !checkOutDate) {
-
     throw new Error("Check-in date and check-out date are required.");
-
   }
 
   if (numberOfGuests <= 0) {
-
     throw new Error("Number of guests must be at least 1.");
-
   }
-
-
 
   // 1. Fetch the property to get the price per night and price per extra guest
 
   const { data: property, error: propertyError } = await supabase
-
     .from("properties")
-
     .select("price_per_night, price_per_extra_guest")
-
     .eq("id", propertyId)
-
     .single();
-
-
-
   if (propertyError || !property) {
-
     throw new Error(propertyError?.message || "Property not found.");
-
   }
-
-
 
   // 2. Calculate the total price
 
   const numberOfNights = calculateNights(
-
     checkInDate.toString(),
-
     checkOutDate.toString()
-
   );
-
-
 
   let basePrice = property.price_per_night;
 
   if (numberOfGuests > 1) {
-
     basePrice += (numberOfGuests - 1) * property.price_per_extra_guest;
-
   }
 
-
-
   const totalPrice = numberOfNights * basePrice;
-
-
 
   // 3. Create the new booking object
 
   const newBooking = {
-
     property_id: propertyId,
-
     user_id: userId,
-
     check_in_date: checkInDate,
-
     check_out_date: checkOutDate,
-
     number_of_guests: numberOfGuests,
-
     total_price: totalPrice,
-
     guest_email: guestEmail,
-
     guest_full_name: guestFullName,
-
     guest_phone_number: guestPhoneNumber,
-
   };
-
-
 
   // 4. Insert the booking into the database
 
   const { data, error } = await supabase
-
     .from("bookings")
-
     .insert([newBooking])
-
     .select();
-
-
-
   if (error) {
-
     throw new Error(error.message);
-
   }
 
-
-
   return data;
-
 };
 
 export const getBookings = async (userId: string) => {
@@ -221,7 +146,13 @@ export const deleteBooking = async (
   if (userId && booking.user_id === userId) {
     // Authenticated user deleting their own booking
     isAuthorized = true;
-  } else if (booking.user_id === null && guestEmail && guestPhoneNumber && booking.guest_email === guestEmail && booking.guest_phone_number === guestPhoneNumber) {
+  } else if (
+    booking.user_id === null &&
+    guestEmail &&
+    guestPhoneNumber &&
+    booking.guest_email === guestEmail &&
+    booking.guest_phone_number === guestPhoneNumber
+  ) {
     // Unauthenticated booking, being deleted by an authenticated user providing matching guest details
     isAuthorized = true;
   }
