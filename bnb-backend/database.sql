@@ -12,7 +12,10 @@ CREATE TABLE properties (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     location VARCHAR(255),
-    price_per_night DECIMAL(10, 2) NOT NULL
+    price_per_night DECIMAL(10, 2) NOT NULL,
+    price_per_extra_guest DECIMAL(10, 2),
+    image_url TEXT,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE
     -- For availability, a separate table linking properties to available dates would be a more robust approach.
 );
 
@@ -23,7 +26,7 @@ CREATE TABLE bookings (
     check_in_date DATE NOT NULL,
     check_out_date DATE NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     property_id INT NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
     CONSTRAINT check_in_before_check_out CHECK (check_in_date < check_out_date)
 );
