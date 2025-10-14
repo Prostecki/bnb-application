@@ -18,44 +18,6 @@ const ProfilePage = () => {
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
-  const handleCancelBooking = async (bookingId: string) => {
-    if (window.confirm("Are you sure you want to cancel this booking?")) {
-      // console.log("User confirmed. Cancelling booking:", bookingId);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Authentication error. Please log in again.");
-          return;
-        }
-        const res = await fetch(
-          `http://localhost:3000/api/bookings/${bookingId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.errror || "Failed to cancel booking.");
-        }
-        setBookings((currentBookings) =>
-          currentBookings.filter((booking) => booking.id !== bookingId)
-        );
-        alert("Booking cancelled successfully!");
-      } catch (err: any) {
-        alert(`Error: ${err.message}`);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, router, authLoading]);
-
   const fetchUserData = useCallback(async () => {
     if (!isAuthenticated) return;
 
@@ -98,6 +60,76 @@ const ProfilePage = () => {
       setLoading(false);
     }
   }, [isAuthenticated]);
+
+  const handleCancelBooking = async (bookingId: string) => {
+    if (window.confirm("Are you sure you want to cancel this booking?")) {
+      // console.log("User confirmed. Cancelling booking:", bookingId);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Authentication error. Please log in again.");
+          return;
+        }
+        const res = await fetch(
+          `http://localhost:3000/api/bookings/${bookingId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.errror || "Failed to cancel booking.");
+        }
+        setBookings((currentBookings) =>
+          currentBookings.filter((booking) => booking.id !== bookingId)
+        );
+        alert("Booking cancelled successfully!");
+      } catch (err: any) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+  };
+
+  const handleDeleteProperty = async (propertyId: string) => {
+    console.log("Property ID:", propertyId);
+    if (window.confirm("Are you sure you want to delete this property?")) {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Authentication error. Please log in again.");
+          return;
+        }
+        const res = await fetch(
+          `http://localhost:3000/api/properties/${propertyId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.errror || "Failed to delete property.");
+        }
+        setProperties((currentProperty) =>
+          currentProperty.filter((property) => property.id !== propertyId)
+        );
+        alert("Property deleted successfully!");
+      } catch (err: any) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router, authLoading]);
 
   useEffect(() => {
     fetchUserData();
@@ -149,12 +181,18 @@ const ProfilePage = () => {
                     <p>Price per night: ${property.pricePerNight}</p>
                     <p>Price per extra guest: ${property.pricePerExtraGuest}</p>
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 flex justify-around items-center">
                     <button
                       onClick={() => setEditingProperty(property)}
                       className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProperty(property.id)}
+                      className="btn btn-sm btn-error btn-outline"
+                    >
+                      Delete Property
                     </button>
                   </div>
                 </li>
