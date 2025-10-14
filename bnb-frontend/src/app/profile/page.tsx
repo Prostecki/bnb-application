@@ -18,6 +18,38 @@ const ProfilePage = () => {
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
+  const handleCancelBooking = async (bookingId: string) => {
+    if (window.confirm("Are you sure you want to cancel this booking?")) {
+      // console.log("User confirmed. Cancelling booking:", bookingId);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Authentication error. Please log in again.");
+          return;
+        }
+        const res = await fetch(
+          `http://localhost:3000/api/bookings/${bookingId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.errror || "Failed to cancel booking.");
+        }
+        setBookings((currentBookings) =>
+          currentBookings.filter((booking) => booking.id !== bookingId)
+        );
+        alert("Booking cancelled successfully!");
+      } catch (err: any) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");
@@ -158,6 +190,14 @@ const ProfilePage = () => {
                     <p className="mt-2 font-semibold">
                       Total Price: ${booking.total_price}
                     </p>
+                    <div className="mt-4">
+                      <button
+                        onClick={() => handleCancelBooking(booking.id)}
+                        className="btn btn-sm btn-error btn-outline"
+                      >
+                        Cancel Booking
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}
