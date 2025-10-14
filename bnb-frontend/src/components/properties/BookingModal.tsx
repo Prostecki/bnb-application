@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 interface BookingModalProps {
+  isOpen: boolean;
+  onClose: () => void;
   propertyId: string;
-  modalRef: React.RefObject<HTMLDialogElement | null>;
+  pricePerNight: number;
 }
 
 export default function BookingModal({
+  isOpen,
+  onClose,
+  pricePerNight,
   propertyId,
-  modalRef,
 }: BookingModalProps) {
+  const modalRef = useRef<HTMLDialogElement>(null);
   const { user } = useAuth();
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
@@ -21,6 +26,14 @@ export default function BookingModal({
   const [success, setSuccess] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.showModal();
+    } else {
+      modalRef.current?.close();
+    }
+  }, [isOpen]);
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +82,28 @@ export default function BookingModal({
 
       setSuccess("Booking successful!");
       setTimeout(() => {
-        modalRef.current?.close();
+        onClose(); // Use onClose prop
         setSuccess("");
       }, 2000);
     } catch (err: any) {
       setError(err.message);
     }
   };
+
+  // This allows the user to close the modal by pressing the Escape key.
+  useEffect(() => {
+    const dialog = modalRef.current;
+    const handleCancel = (event: Event) => {
+      event.preventDefault();
+      onClose();
+    };
+
+    dialog?.addEventListener("cancel", handleCancel);
+
+    return () => {
+      dialog?.removeEventListener("cancel", handleCancel);
+    };
+  }, [onClose]);
 
   return (
     <dialog ref={modalRef} className="modal">
@@ -138,11 +166,7 @@ export default function BookingModal({
             <button type="submit" className="btn btn-primary">
               Confirm Booking
             </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => modalRef.current?.close()}
-            >
+            <button type="button" className="btn" onClick={onClose}>
               Cancel
             </button>
           </div>
@@ -151,7 +175,7 @@ export default function BookingModal({
         {success && <div className="text-green-500 mt-4">{success}</div>}
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button onClick={onClose}>close</button>
       </form>
     </dialog>
   );

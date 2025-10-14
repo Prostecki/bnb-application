@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import type { Property } from "../../models/property.model";
 
 interface EditPropertyModalProps {
+  isOpen: boolean;
   property: Property;
   onClose: () => void;
-  onPropertyUpdated: () => void;
+  onPropertyUpdated?: () => void;
 }
 
 const EditPropertyModal = ({
@@ -64,7 +65,7 @@ const EditPropertyModal = ({
       setSuccess("Property updated successfully!");
 
       setTimeout(() => {
-        onPropertyUpdated();
+        onPropertyUpdated?.();
         onClose();
       }, 2000); // Show success message for 2 seconds
     } catch (err: any) {
