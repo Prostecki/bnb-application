@@ -17,9 +17,7 @@ interface CreatePropertyFormProps {
   onPropertyCreated: () => void;
 }
 
-const CreatePropertyForm = ({
-  onPropertyCreated,
-}: CreatePropertyFormProps) => {
+const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");

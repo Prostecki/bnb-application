@@ -5,29 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
 import EditPropertyModal from "@/components/properties/EditPropertyModal";
-
-// Match the backend model
-interface Property {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  pricePerNight: number;
-  pricePerExtraGuest: number;
-  imageUrl: string;
-  userId: string;
-}
-
-interface Booking {
-  id: string;
-  properties: {
-    name: string;
-    image_url: string;
-  };
-  check_in_date: string;
-  check_out_date: string;
-  total_price: number;
-}
+import type { Property } from "@/models/property.model";
+import type { Booking } from "@/models/booking.model";
 
 const ProfilePage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -164,8 +143,8 @@ const ProfilePage = () => {
                   className="border p-4 rounded-lg shadow flex items-center"
                 >
                   <img
-                    src={booking.properties.image_url}
-                    alt={booking.properties.name}
+                    src={booking.properties?.image_url}
+                    alt={booking.properties?.name}
                     className="w-24 h-24 object-cover rounded-md mr-4"
                   />
                   <div>
@@ -205,6 +184,7 @@ const ProfilePage = () => {
       {editingProperty && (
         <EditPropertyModal
           property={editingProperty}
+          isOpen={!!editingProperty}
           onClose={() => setEditingProperty(null)}
           onPropertyUpdated={handlePropertyUpdated}
         />
