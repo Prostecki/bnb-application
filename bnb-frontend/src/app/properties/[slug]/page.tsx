@@ -1,61 +1,93 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import BookingModal from "../../../components/properties/BookingModal";
-import PropertyDetailCard from "../../../components/properties/PropertyDetailCard";
 import { useProperty } from "../../../hooks/useProperty";
+import PropertyDetailCard from "../../../components/properties/PropertyDetailCard";
+import BookingModal from "../../../components/properties/BookingModal";
+import { useAuth } from "../../../context/AuthContext";
+import EditPropertyModal from "@/components/properties/EditPropertyModal";
 
-export default function PropertyDetailPage() {
-  const modalRef = useRef<HTMLDialogElement>(null);
+export default function PropertyPage() {
   const params = useParams();
-  const slug = typeof params.slug === "string" ? params.slug : "";
+  const slug = params.slug as string;
   const { property, loading, error } = useProperty(slug);
+  const { user, isAuthenticated } = useAuth();
+
+  const [isBookingModalOpen, setBookingModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+
+  const handleBookNowClick = () => {
+    setBookingModalOpen(true);
+  };
+
+  const handleEditClick = () => {
+    setEditModalOpen(true);
+  };
 
   if (loading) {
-    return <div className="container mx-auto p-4">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div className="container mx-auto p-4">{error}</div>;
+    return <div>Error: {error}</div>;
   }
 
   if (!property) {
-    return <div className="container mx-auto p-4">Property not found.</div>;
+    return <div>Property not found.</div>;
   }
 
+  const isOwner = isAuthenticated && user && user.id === property.userId;
+
   return (
-    <>
-      <main>
-        <div
-          className="hero min-h-[40vh]"
-          style={{ backgroundImage: `url(${property.imageUrl})` }}
-        >
-          <div className="hero-overlay bg-opacity-60"></div>
-          <div className="hero-content text-center text-neutral-content">
-            <div className="max-w-md">
-              <h1 className="mb-5 text-5xl font-bold">{property.name}</h1>
+    <div className="container mx-auto p-4">
+      <div className="flex justify-between items-start">
+        <h1 className="text-3xl font-bold mb-4">{property.name}</h1>
+        {isOwner && (
+          <button onClick={handleEditClick} className="btn btn-secondary">
+            Edit Property
+          </button>
+        )}
+      </div>
+      <img
+        src={property.imageUrl}
+        alt={property.name}
+        className="w-full h-96 object-cover rounded-lg mb-4"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
+          <p>{property.description}</p>
+          {property.user && (
+            <div className="mt-4">
+              <h3 className="text-xl font-semibold">Owner</h3>
+              <p>{property.user.name}</p>
             </div>
-          </div>
+          )}
         </div>
-
-        <div className="container mx-auto p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <h2 className="text-2xl font-bold mb-4">Description</h2>
-              <p>{property.description}</p>
-            </div>
-            <div>
-              <PropertyDetailCard
-                pricePerNight={property.pricePerNight}
-                onBookNowClick={() => modalRef.current?.showModal()}
-              />
-            </div>
-          </div>
+        <div>
+          <PropertyDetailCard
+            pricePerNight={property.pricePerNight}
+            onBookNowClick={handleBookNowClick}
+          />
         </div>
-      </main>
+      </div>
 
-      <BookingModal propertyId={property.id} modalRef={modalRef} />
-    </>
+      {isBookingModalOpen && (
+        <BookingModal
+          isOpen={isBookingModalOpen}
+          onClose={() => setBookingModalOpen(false)}
+          propertyId={property.id}
+          pricePerNight={property.pricePerNight}
+        />
+      )}
+
+      {isEditModalOpen && property && (
+        <EditPropertyModal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          property={property}
+        />
+      )}
+    </div>
   );
 }

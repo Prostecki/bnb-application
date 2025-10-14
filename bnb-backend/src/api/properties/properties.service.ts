@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase.js";
 import type { Property } from "../../models/property.model.js";
+import type { User } from "../../models/user.model.js";
 
 interface PropertyFromDb {
   id: number;
@@ -10,6 +11,7 @@ interface PropertyFromDb {
   price_per_extra_guest: number;
   image_url: string;
   user_id: string;
+  user: User;
 }
 
 const mapToCamelCase = (property: PropertyFromDb): Property => ({
@@ -21,11 +23,14 @@ const mapToCamelCase = (property: PropertyFromDb): Property => ({
   pricePerExtraGuest: property.price_per_extra_guest,
   imageUrl: property.image_url,
   userId: property.user_id,
+  user: property.user,
   availability: [], // Assuming availability is not stored directly
 });
 
 export const getProperties = async () => {
-  const { data, error } = await supabase.from("properties").select("*");
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*, user:users(*)");
   if (error) {
     throw new Error(error.message);
   }
@@ -35,7 +40,7 @@ export const getProperties = async () => {
 export const getPropertiesByUserId = async (userId: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*")
+    .select("*, user:users(*)")
     .eq("user_id", userId);
   if (error) {
     throw new Error(error.message);
@@ -46,7 +51,7 @@ export const getPropertiesByUserId = async (userId: string) => {
 export const getPropertyById = async (id: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*")
+    .select("*, user:users(*)")
     .eq("id", id)
     .single();
 
@@ -55,6 +60,7 @@ export const getPropertyById = async (id: string) => {
   }
   return mapToCamelCase(data);
 };
+
 
 export const createProperty = async (
   property: Omit<Property, "id" | "userId">,

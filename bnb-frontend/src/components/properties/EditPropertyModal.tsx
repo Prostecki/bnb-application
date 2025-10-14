@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Property {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  pricePerNight: number;
-  pricePerExtraGuest: number;
-  imageUrl: string;
-}
+import type { Property } from "../../models/property.model";
 
 interface EditPropertyModalProps {
   property: Property;

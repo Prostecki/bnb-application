@@ -1,13 +1,12 @@
-import type { User } from "./user.model.js";
+import type { User } from "./user.model";
 
 export interface Property {
-  id: number;
+  id: string;
   name: string;
   description: string;
   location: string;
   pricePerNight: number;
   pricePerExtraGuest: number;
-  availability: Date[]; // Represents an array of available dates
   imageUrl: string;
   userId: string;
   user?: User;

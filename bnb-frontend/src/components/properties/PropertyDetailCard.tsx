@@ -17,9 +17,7 @@ export default function PropertyDetailCard({
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body">
         <h2 className="card-title">Booking</h2>
-        <p className="text-lg font-semibold">
-          Price: ${pricePerNight} / night
-        </p>
+        <p className="text-lg font-semibold">Price: ${pricePerNight} / night</p>
         <div className="card-actions justify-end">
           {isAuthenticated ? (
             <button

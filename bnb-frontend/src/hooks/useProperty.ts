@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Property {
-  id: string;
-  name: string;
-  description: string;
-  pricePerNight: number;
-  imageUrl: string;
-}
+import type { Property } from "../models/property.model";
 
 export function useProperty(slug: string) {
   const [property, setProperty] = useState<Property | null>(null);

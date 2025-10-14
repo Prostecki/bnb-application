@@ -7,11 +7,12 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import type { User } from "../models/user.model";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: any | null;
-  login: (userData?: any) => void;
+  user: User | null;
+  login: (userData?: User) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -20,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Check token when application loads
@@ -50,8 +51,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
           } catch (apiError) {
             console.error("Error verifying token:", apiError);
-            // If API is unavailable but token exists, consider user authenticated
-            setIsAuthenticated(true);
+            // If the API is unavailable, the token cannot be verified, so log out.
+            localStorage.removeItem("token");
+            setIsAuthenticated(false);
+            setUser(null);
           }
         }
       } catch (error) {
@@ -67,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuthStatus();
   }, []);
 
-  const login = (userData?: any) => {
+  const login = (userData?: User) => {
     setIsAuthenticated(true);
     if (userData) {
       setUser(userData);
