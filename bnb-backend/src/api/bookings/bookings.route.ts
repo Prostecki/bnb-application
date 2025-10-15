@@ -4,6 +4,7 @@ import {
   getBookingByIdController,
   createBookingController,
   deleteBookingController,
+  updateBookingController,
 } from "./bookings.controller.js";
 import { jwtMiddleware } from "../../middleware/jwt.js";
 
@@ -16,5 +17,6 @@ bookingsRouter.post("/", jwtMiddleware, createBookingController);
 bookingsRouter.get("/", jwtMiddleware, getBookingsController);
 bookingsRouter.get("/:id", jwtMiddleware, getBookingByIdController);
 bookingsRouter.delete("/:id", jwtMiddleware, deleteBookingController);
+bookingsRouter.put("/:id", jwtMiddleware, updateBookingController);
 
 export default bookingsRouter;
