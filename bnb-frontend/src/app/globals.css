@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@import "react-day-picker/style.css";
 
 :root {
   --background: #ffffff;
@@ -16,4 +17,84 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* React Day Picker custom styles */
+.rdp {
+  --rdp-accent-color: #3b82f6;
+  --rdp-accent-color-dark: #1e40af;
+}
+
+/* Общие стили для всех заблокированных дней */
+.rdp-day_disabled {
+  cursor: not-allowed !important;
+  text-decoration: line-through;
+}
+
+/* Прошедшие дни - светло-серые */
+.rdp-day_disabled[data-past="true"] {
+  background-color: #f9fafb !important;
+  color: #d1d5db !important;
+  opacity: 0.6 !important;
+}
+
+.rdp-day_disabled[data-past="true"]:hover {
+  background-color: #f9fafb !important;
+  color: #d1d5db !important;
+}
+
+/* Заблокированные дни из базы данных - красноватые */
+.rdp-day_disabled[data-booked="true"] {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  opacity: 0.8 !important;
+  font-weight: 600;
+}
+
+.rdp-day_disabled[data-booked="true"]:hover {
+  background-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+/* Обычные заблокированные дни (если не помечены специально) */
+.rdp-day_disabled:not([data-past]):not([data-booked]) {
+  background-color: #f3f4f6 !important;
+  color: #9ca3af !important;
+  opacity: 0.5 !important;
+}
+
+/* Выбранные дни */
+.rdp-day_selected {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Доступные даты из базы данных - зеленые */
+.rdp-day_available {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+  font-weight: 500;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.rdp-day_available:hover {
+  background-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+/* Недоступные даты (не в availability) - серые */
+.rdp-day_unavailable {
+  background-color: #f9fafb !important;
+  color: #9ca3af !important;
+  opacity: 0.7 !important;
+}
+
+.rdp-day_unavailable:hover {
+  background-color: #f9fafb !important;
+  color: #9ca3af !important;
+}
+
+/* Hover для доступных дней */
+.rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
+  background-color: #e5e7eb;
 }

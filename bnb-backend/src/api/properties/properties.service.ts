@@ -11,6 +11,7 @@ interface PropertyFromDb {
   price_per_extra_guest: number;
   image_url: string;
   user_id: string;
+  availability: string[] | null; // Array of date strings from database
   user: User;
 }
 
@@ -24,13 +25,13 @@ const mapToCamelCase = (property: PropertyFromDb): Property => ({
   imageUrl: property.image_url,
   userId: property.user_id,
   user: property.user,
-  availability: [], // Assuming availability is not stored directly
+  availability: property.availability || [], // Use availability from database or empty array
 });
 
 export const getProperties = async () => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*, user:users(*)");
+    .select("*, availability, user:users(*)");
   if (error) {
     throw new Error(error.message);
   }
@@ -40,7 +41,7 @@ export const getProperties = async () => {
 export const getPropertiesByUserId = async (userId: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*, user:users(*)")
+    .select("*, availability, user:users(*)")
     .eq("user_id", userId);
   if (error) {
     throw new Error(error.message);
@@ -51,7 +52,7 @@ export const getPropertiesByUserId = async (userId: string) => {
 export const getPropertyById = async (id: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*, user:users(*)")
+    .select("*, availability, user:users(*)")
     .eq("id", id)
     .single();
 
@@ -60,7 +61,6 @@ export const getPropertyById = async (id: string) => {
   }
   return mapToCamelCase(data);
 };
-
 
 export const createProperty = async (
   property: Omit<Property, "id" | "userId">,

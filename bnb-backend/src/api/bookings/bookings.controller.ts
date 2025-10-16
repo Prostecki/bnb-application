@@ -26,7 +26,7 @@ export const getBookingsController = async (c: Context) => {
 
 export const getBookingByIdController = async (c: Context) => {
   try {
-    const { id } = c.req.param();
+    const id = c.req.param("id");
     const payload = c.get("jwtPayload");
     const userId = payload.sub;
     const data = await bookingService.getBookingById(id, userId);
@@ -38,7 +38,7 @@ export const getBookingByIdController = async (c: Context) => {
 
 export const deleteBookingController = async (c: Context) => {
   try {
-    const { id } = c.req.param();
+    const id = c.req.param("id");
     const payload = c.get("jwtPayload");
     const userId = payload ? payload.sub : null;
     const data = await bookingService.deleteBooking(id, userId);
@@ -50,7 +50,7 @@ export const deleteBookingController = async (c: Context) => {
 
 export const updateBookingController = async (c: Context) => {
   try {
-    const { id } = c.req.param();
+    const id = c.req.param("id");
 
     const payload = c.get("jwtPayload");
     const userId = payload.sub;

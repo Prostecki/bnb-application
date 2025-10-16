@@ -78,6 +78,7 @@ export default function PropertyPage() {
           onClose={() => setBookingModalOpen(false)}
           propertyId={property.id}
           pricePerNight={property.pricePerNight}
+          availability={property.availability} // Pass availability data
         />
       )}
 

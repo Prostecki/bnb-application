@@ -1,18 +1,6 @@
 import { supabase } from "../../lib/supabase.js";
 import type { Booking } from "../../models/booking.model.js";
 
-// Helper function to calculate number of nights
-const calculateNights = (checkIn: string, checkOut: string): number => {
-  const checkInDate = new Date(checkIn);
-  const checkOutDate = new Date(checkOut);
-  const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
-  const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  if (nights <= 0) {
-    throw new Error("Check-out date must be after check-in date.");
-  }
-  return nights;
-};
-
 export const createBooking = async (
   bookingData: Pick<
     Booking,
@@ -24,7 +12,6 @@ export const createBooking = async (
     | "guestFullName"
     | "guestPhoneNumber"
   >,
-
   userId: string // userId is now mandatory
 ) => {
   const {
@@ -37,60 +24,51 @@ export const createBooking = async (
     guestPhoneNumber,
   } = bookingData;
 
+  // Basic validation
   if (!checkInDate || !checkOutDate) {
     throw new Error("Check-in date and check-out date are required.");
   }
-
   if (numberOfGuests <= 0) {
     throw new Error("Number of guests must be at least 1.");
   }
 
-  // 1. Fetch the property to get the price per night and price per extra guest
+  // Availability Check
+  const { data: conflictingBookings, error: availabilityError } = await supabase
+    .from("bookings")
+    .select("id")
+    .eq("property_id", propertyId)
+    .lt("check_in_date", checkOutDate) // An existing booking starts before the new one ends
+    .gt("check_out_date", checkInDate); // And an existing booking ends after the new one starts
 
-  const { data: property, error: propertyError } = await supabase
-    .from("properties")
-    .select("price_per_night, price_per_extra_guest")
-    .eq("id", propertyId)
-    .single();
-  if (propertyError || !property) {
-    throw new Error(propertyError?.message || "Property not found.");
+  if (availabilityError) {
+    throw new Error(
+      `Error checking availability: ${availabilityError.message}`
+    );
   }
 
-  // 2. Calculate the total price
-
-  const numberOfNights = calculateNights(
-    checkInDate.toString(),
-    checkOutDate.toString()
-  );
-
-  let basePrice = property.price_per_night;
-
-  if (numberOfGuests > 1) {
-    basePrice += (numberOfGuests - 1) * property.price_per_extra_guest;
+  if (conflictingBookings && conflictingBookings.length > 0) {
+    throw new Error("These dates are already booked for this property.");
   }
 
-  const totalPrice = numberOfNights * basePrice;
-
-  // 3. Create the new booking object
-
+  // The logic for price calculation has been removed.
+  // The database trigger `calculate_booking_total_price` will handle it automatically.
   const newBooking = {
     property_id: propertyId,
     user_id: userId,
     check_in_date: checkInDate,
     check_out_date: checkOutDate,
     number_of_guests: numberOfGuests,
-    total_price: totalPrice,
     guest_email: guestEmail,
     guest_full_name: guestFullName,
     guest_phone_number: guestPhoneNumber,
+    // total_price is no longer sent; the trigger will compute it.
   };
-
-  // 4. Insert the booking into the database
 
   const { data, error } = await supabase
     .from("bookings")
     .insert([newBooking])
     .select();
+
   if (error) {
     throw new Error(error.message);
   }
@@ -110,7 +88,19 @@ export const getBookings = async (userId: string) => {
   return data;
 };
 
-export const getBookingById = async (id: string, userId: string) => {
+export const getBookingsByPropertyId = async (propertyId: string) => {
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("check_in_date, check_out_date")
+    .eq("property_id", propertyId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
+
+export const getBookingById = async (id: string | number, userId: string) => {
   const { data, error } = await supabase
     .from("bookings")
     .select("*, properties(*)")
@@ -125,15 +115,12 @@ export const getBookingById = async (id: string, userId: string) => {
 };
 
 export const deleteBooking = async (
-  id: string,
-  userId: string | null,
-  guestEmail?: string,
-  guestPhoneNumber?: string
+  id: string | number,
+  userId: string | null
 ) => {
-  // 1. Fetch the booking by ID first
   const { data: booking, error: fetchError } = await supabase
     .from("bookings")
-    .select("check_in_date, user_id, guest_email, guest_phone_number")
+    .select("check_in_date, user_id")
     .eq("id", id)
     .single();
 
@@ -142,60 +129,43 @@ export const deleteBooking = async (
   }
 
   if (fetchError) {
-    // Log the actual error for debugging purposes, but throw a generic message
     console.error("Supabase fetch error:", fetchError);
     throw new Error("Could not fetch booking details.");
   }
 
-  // 2. Apply authorization logic
-  let isAuthorized = false;
-  if (userId && booking.user_id === userId) {
-    // Authenticated user deleting their own booking
-    isAuthorized = true;
-  } else if (
-    booking.user_id === null &&
-    guestEmail &&
-    guestPhoneNumber &&
-    booking.guest_email === guestEmail &&
-    booking.guest_phone_number === guestPhoneNumber
-  ) {
-    // Unauthenticated booking, being deleted by an authenticated user providing matching guest details
-    isAuthorized = true;
-  }
-
-  if (!isAuthorized) {
+  if (userId && booking.user_id !== userId) {
     throw new Error("You are not authorized to delete this booking.");
   }
 
-  // 3. Check cancellation policy
   const checkInDate = new Date(booking.check_in_date);
   const now = new Date();
-  const timeDifference = checkInDate.getTime() - now.getTime(); // Difference in milliseconds
+  const timeDifference = checkInDate.getTime() - now.getTime();
   const hoursDifference = timeDifference / (1000 * 3600);
 
   if (hoursDifference < 48) {
     throw new Error("Booking cannot be cancelled within 48 hours of check-in.");
   }
 
-  // 4. If authorized and within cancellation window, delete the booking
-  const { data, error } = await supabase.from("bookings").delete().eq("id", id);
+  const { error: deleteError } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", id);
 
-  if (error) {
-    throw new Error(error.message);
+  if (deleteError) {
+    throw new Error(deleteError.message);
   }
 
   return { message: `Booking with id ${id} cancelled successfully.` };
 };
 
 export const updateBooking = async (
-  id: string,
+  id: string | number,
   userId: string,
   newBookingData: any
 ) => {
-  // 1. Fetch the existing booking to get its current data
   const { data: existingBooking, error: fetchError } = await supabase
     .from("bookings")
-    .select("user_id, check_in_date, property_id")
+    .select("user_id, check_in_date")
     .eq("id", id)
     .single();
 
@@ -203,12 +173,10 @@ export const updateBooking = async (
     throw new Error(fetchError?.message || "Booking not found.");
   }
 
-  // 2. Authorization: Check if the user owns the booking
   if (existingBooking.user_id !== userId) {
     throw new Error("You are not authorized to update this booking.");
   }
 
-  // 3. Policy: Check if the change is allowed (e.g., not within 48 hours of check-in)
   const checkInDate = new Date(existingBooking.check_in_date);
   const now = new Date();
   const hoursDifference =
@@ -218,64 +186,24 @@ export const updateBooking = async (
     throw new Error("Booking cannot be changed within 48 hours of check-in.");
   }
 
-  // 4. Date availability check
+  // Price recalculation logic is removed. The trigger will handle it.
   const {
     checkInDate: newCheckIn,
     checkOutDate: newCheckOut,
     numberOfGuests: newNumberOfGuests,
   } = newBookingData;
 
-  if (newCheckIn && newCheckOut) {
-    const { data: conflictingBookings, error: availabilityError } =
-      await supabase
-        .from("bookings")
-        .select("id")
-        .eq("property_id", existingBooking.property_id) // Look for bookings of the same property
-        .neq("id", id) // Exclude the current booking from the check
-        .lt("check_in_date", newCheckOut) // A conflict exists if another booking starts before our new one ends
-        .gt("check_out_date", newCheckIn); // And if it ends after our new one starts
-
-    if (availabilityError) {
-      throw new Error(availabilityError.message);
-    }
-
-    if (conflictingBookings && conflictingBookings.length > 0) {
-      throw new Error("The new dates are not available for this property.");
-    }
-  }
-
-  // 5. Recalculate the price
-  const { data: property, error: propertyError } = await supabase
-    .from("properties")
-    .select("price_per_night, price_per_extra_guest")
-    .eq("id", existingBooking.property_id)
-    .single();
-
-  if (propertyError || !property) {
-    throw new Error(propertyError?.message || "Property not found.");
-  }
-
-  const numberOfNights = calculateNights(newCheckIn, newCheckOut);
-  let basePrice = property.price_per_night;
-
-  if (newNumberOfGuests > 1) {
-    basePrice += (newNumberOfGuests - 1) * property.price_per_extra_guest;
-  }
-  const newTotalPrice = numberOfNights * basePrice;
-
-  // 6. Update the record in the database
   const updateData = {
     check_in_date: newCheckIn,
     check_out_date: newCheckOut,
     number_of_guests: newNumberOfGuests,
-    total_price: newTotalPrice,
   };
 
   const { data: updatedBooking, error: updateError } = await supabase
     .from("bookings")
     .update(updateData)
     .eq("id", id)
-    .select("*, properties(*)") // Return the updated record with property data
+    .select("*, properties(*)")
     .single();
 
   if (updateError) {

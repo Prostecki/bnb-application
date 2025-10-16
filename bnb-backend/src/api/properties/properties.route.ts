@@ -6,6 +6,7 @@ import {
   updatePropertyController,
   deletePropertyController,
   getMyPropertiesController,
+  getPropertyBookingsController,
 } from "./properties.controller.js";
 import { jwtMiddleware } from "../../middleware/jwt.js";
 
@@ -19,6 +20,7 @@ propertiesRouter.get("/me", jwtMiddleware, getMyPropertiesController);
 
 // Public routes
 propertiesRouter.get("/:id", getPropertyByIdController);
+propertiesRouter.get("/:id/bookings", getPropertyBookingsController);
 
 // Protected routes
 propertiesRouter.post("/", jwtMiddleware, createPropertyController);
