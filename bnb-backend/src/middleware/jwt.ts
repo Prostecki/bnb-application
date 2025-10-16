@@ -1,5 +1,5 @@
-import { jwt } from 'hono/jwt';
-import { type Context, type Next } from 'hono';
+import { jwt } from "hono/jwt";
+import { type Context, type Next } from "hono";
 
 export const jwtMiddleware = (c: Context, next: Next) => {
   const middleware = jwt({
@@ -9,9 +9,9 @@ export const jwtMiddleware = (c: Context, next: Next) => {
 };
 
 export const getUserInfo = (c: Context) => {
-  const payload = c.get('jwtPayload');
+  const payload = c.get("jwtPayload");
   return c.json({
     message: "You are authorized!",
-    user_info_from_token: payload
+    user_info_from_token: payload,
   });
 };

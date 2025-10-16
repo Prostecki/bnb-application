@@ -63,7 +63,7 @@ const ProfilePage = () => {
 
   const handleCancelBooking = async (bookingId: string) => {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
-      // console.log("User confirmed. Cancelling booking:", bookingId);
+      console.log("User confirmed. Cancelling booking:", bookingId);
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -81,7 +81,7 @@ const ProfilePage = () => {
         );
         if (!res.ok) {
           const errorData = await res.json();
-          throw new Error(errorData.errror || "Failed to cancel booking.");
+          throw new Error(errorData.error || "Failed to cancel booking.");
         }
         setBookings((currentBookings) =>
           currentBookings.filter((booking) => booking.id !== bookingId)

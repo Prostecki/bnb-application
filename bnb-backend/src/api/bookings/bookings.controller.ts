@@ -41,16 +41,7 @@ export const deleteBookingController = async (c: Context) => {
     const { id } = c.req.param();
     const payload = c.get("jwtPayload");
     const userId = payload ? payload.sub : null;
-    const { guestEmail, guestPhoneNumber } = await c.req.json<{
-      guestEmail?: string;
-      guestPhoneNumber?: string;
-    }>();
-    const data = await bookingService.deleteBooking(
-      id,
-      userId,
-      guestEmail,
-      guestPhoneNumber
-    );
+    const data = await bookingService.deleteBooking(id, userId);
     return c.json(data);
   } catch (error: any) {
     return c.json({ error: error.message }, 500);

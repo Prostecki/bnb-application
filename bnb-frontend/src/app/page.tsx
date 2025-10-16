@@ -1,9 +1,9 @@
-import PropertiesPage from "./properties/page";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
 
 export default function Home() {
   return (
     <main>
-      <PropertiesPage />
+      <WelcomeScreen />
     </main>
   );
 }

@@ -137,8 +137,14 @@ export const deleteBooking = async (
     .eq("id", id)
     .single();
 
-  if (fetchError || !booking) {
-    throw new Error(fetchError?.message || "Booking not found.");
+  if (!booking) {
+    throw new Error("Booking not found.");
+  }
+
+  if (fetchError) {
+    // Log the actual error for debugging purposes, but throw a generic message
+    console.error("Supabase fetch error:", fetchError);
+    throw new Error("Could not fetch booking details.");
   }
 
   // 2. Apply authorization logic
@@ -205,7 +211,8 @@ export const updateBooking = async (
   // 3. Policy: Check if the change is allowed (e.g., not within 48 hours of check-in)
   const checkInDate = new Date(existingBooking.check_in_date);
   const now = new Date();
-  const hoursDifference = (checkInDate.getTime() - now.getTime()) / (1000 * 3600);
+  const hoursDifference =
+    (checkInDate.getTime() - now.getTime()) / (1000 * 3600);
 
   if (hoursDifference < 48) {
     throw new Error("Booking cannot be changed within 48 hours of check-in.");
@@ -219,13 +226,14 @@ export const updateBooking = async (
   } = newBookingData;
 
   if (newCheckIn && newCheckOut) {
-    const { data: conflictingBookings, error: availabilityError } = await supabase
-      .from("bookings")
-      .select("id")
-      .eq("property_id", existingBooking.property_id) // Look for bookings of the same property
-      .neq("id", id) // Exclude the current booking from the check
-      .lt("check_in_date", newCheckOut) // A conflict exists if another booking starts before our new one ends
-      .gt("check_out_date", newCheckIn); // And if it ends after our new one starts
+    const { data: conflictingBookings, error: availabilityError } =
+      await supabase
+        .from("bookings")
+        .select("id")
+        .eq("property_id", existingBooking.property_id) // Look for bookings of the same property
+        .neq("id", id) // Exclude the current booking from the check
+        .lt("check_in_date", newCheckOut) // A conflict exists if another booking starts before our new one ends
+        .gt("check_out_date", newCheckIn); // And if it ends after our new one starts
 
     if (availabilityError) {
       throw new Error(availabilityError.message);
@@ -276,4 +284,3 @@ export const updateBooking = async (
 
   return updatedBooking;
 };
-
