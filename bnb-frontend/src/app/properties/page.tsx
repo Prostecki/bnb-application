@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext"; // Import useAuth
 
 interface Property {
   id: string;
   name: string;
   description: string;
-  imageUrl: string; // Changed from image_url
+  imageUrl: string;
   location: string;
   pricePerNight: number;
 }
@@ -16,6 +17,7 @@ const PropertiesPage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { user } = useAuth(); // Get user from AuthContext
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -41,6 +43,41 @@ const PropertiesPage = () => {
     fetchProperties();
   }, []);
 
+  const handleDeleteProperty = async (propertyId: string) => {
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Authentication error. Please log in again.");
+        return;
+      }
+
+      const res = await fetch(
+        `http://localhost:3000/api/properties/${propertyId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete property.");
+      }
+
+      // Remove property from state to update UI
+      setProperties((prevProperties) =>
+        prevProperties.filter((property) => property.id !== propertyId)
+      );
+      alert("Property deleted successfully!");
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   if (loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
   }
@@ -55,14 +92,10 @@ const PropertiesPage = () => {
       {properties.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <Link
-              href={`/properties/${property.id}`}
-              key={property.id}
-              className="block card card-compact w-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
-            >
+            <div key={property.id} className="card card-compact w-full bg-base-100 shadow-xl">
               <figure>
                 <img
-                  src={property.imageUrl} // Changed from image_url
+                  src={property.imageUrl}
                   alt={property.name}
                   className="h-48 w-full object-cover"
                 />
@@ -70,11 +103,27 @@ const PropertiesPage = () => {
               <div className="card-body">
                 <h2 className="card-title">{property.name}</h2>
                 <p className="truncate">{property.description}</p>
-                <div className="card-actions justify-end">
-                  <span className="btn btn-primary">View</span>
+                <div className="card-actions justify-between items-center mt-2">
+                  <Link
+                    href={`/properties/${property.id}`}
+                    className="btn btn-primary"
+                  >
+                    View
+                  </Link>
+                  {user?.isAdmin && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent navigation from parent Link/div
+                        handleDeleteProperty(property.id);
+                      }}
+                      className="btn btn-error btn-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       ) : (

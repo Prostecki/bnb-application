@@ -160,7 +160,9 @@ const ProfilePage = () => {
         <h1 className="text-3xl font-bold">
           Welcome, {user?.name || user?.email || "User"}!
         </h1>
-        <p>{user?.isAdmin ? "Admin persmissions" : "User permissions"}</p>
+        <p className="text-2xl text-gray-600/80 underline italic">
+          {user?.isAdmin ? "Admin persmissions" : "User permissions"}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

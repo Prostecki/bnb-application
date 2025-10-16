@@ -99,20 +99,8 @@ export const updateProperty = async (
   property: Partial<Property>,
   userId: string
 ) => {
-  // First, verify the user owns the property
-  const { data: existingProperty, error: fetchError } = await supabase
-    .from("properties")
-    .select("user_id")
-    .eq("id", id)
-    .single();
-
-  if (fetchError) {
-    throw new Error(fetchError.message);
-  }
-
-  if (existingProperty.user_id !== userId) {
-    throw new Error("You are not authorized to update this property.");
-  }
+  // RLS policies in the database will handle authorization.
+  // The manual check `if (existingProperty.user_id !== userId)` has been removed.
 
   const {
     name,
@@ -131,7 +119,6 @@ export const updateProperty = async (
     image_url: imageUrl,
   };
 
-  // If authorized, update the property
   const { data, error } = await supabase
     .from("properties")
     .update(propertyToUpdate)
@@ -145,22 +132,9 @@ export const updateProperty = async (
 };
 
 export const deleteProperty = async (id: string, userId: string) => {
-  // First, verify the user owns the property
-  const { data: existingProperty, error: fetchError } = await supabase
-    .from("properties")
-    .select("user_id")
-    .eq("id", id)
-    .single();
+  // RLS policies in the database will handle authorization.
+  // The manual check `if (existingProperty.user_id !== userId)` has been removed.
 
-  if (fetchError) {
-    throw new Error(fetchError.message);
-  }
-
-  if (existingProperty.user_id !== userId) {
-    throw new Error("You are not authorized to delete this property.");
-  }
-
-  // If authorized, delete the property
   const { error } = await supabase.from("properties").delete().eq("id", id);
 
   if (error) {
