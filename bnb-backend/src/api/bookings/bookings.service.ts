@@ -137,8 +137,14 @@ export const deleteBooking = async (
     .eq("id", id)
     .single();
 
-  if (fetchError || !booking) {
-    throw new Error(fetchError?.message || "Booking not found.");
+  if (!booking) {
+    throw new Error("Booking not found.");
+  }
+
+  if (fetchError) {
+    // Log the actual error for debugging purposes, but throw a generic message
+    console.error("Supabase fetch error:", fetchError);
+    throw new Error("Could not fetch booking details.");
   }
 
   // 2. Apply authorization logic
@@ -179,4 +185,102 @@ export const deleteBooking = async (
   }
 
   return { message: `Booking with id ${id} cancelled successfully.` };
+};
+
+export const updateBooking = async (
+  id: string,
+  userId: string,
+  newBookingData: any
+) => {
+  // 1. Fetch the existing booking to get its current data
+  const { data: existingBooking, error: fetchError } = await supabase
+    .from("bookings")
+    .select("user_id, check_in_date, property_id")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !existingBooking) {
+    throw new Error(fetchError?.message || "Booking not found.");
+  }
+
+  // 2. Authorization: Check if the user owns the booking
+  if (existingBooking.user_id !== userId) {
+    throw new Error("You are not authorized to update this booking.");
+  }
+
+  // 3. Policy: Check if the change is allowed (e.g., not within 48 hours of check-in)
+  const checkInDate = new Date(existingBooking.check_in_date);
+  const now = new Date();
+  const hoursDifference =
+    (checkInDate.getTime() - now.getTime()) / (1000 * 3600);
+
+  if (hoursDifference < 48) {
+    throw new Error("Booking cannot be changed within 48 hours of check-in.");
+  }
+
+  // 4. Date availability check
+  const {
+    checkInDate: newCheckIn,
+    checkOutDate: newCheckOut,
+    numberOfGuests: newNumberOfGuests,
+  } = newBookingData;
+
+  if (newCheckIn && newCheckOut) {
+    const { data: conflictingBookings, error: availabilityError } =
+      await supabase
+        .from("bookings")
+        .select("id")
+        .eq("property_id", existingBooking.property_id) // Look for bookings of the same property
+        .neq("id", id) // Exclude the current booking from the check
+        .lt("check_in_date", newCheckOut) // A conflict exists if another booking starts before our new one ends
+        .gt("check_out_date", newCheckIn); // And if it ends after our new one starts
+
+    if (availabilityError) {
+      throw new Error(availabilityError.message);
+    }
+
+    if (conflictingBookings && conflictingBookings.length > 0) {
+      throw new Error("The new dates are not available for this property.");
+    }
+  }
+
+  // 5. Recalculate the price
+  const { data: property, error: propertyError } = await supabase
+    .from("properties")
+    .select("price_per_night, price_per_extra_guest")
+    .eq("id", existingBooking.property_id)
+    .single();
+
+  if (propertyError || !property) {
+    throw new Error(propertyError?.message || "Property not found.");
+  }
+
+  const numberOfNights = calculateNights(newCheckIn, newCheckOut);
+  let basePrice = property.price_per_night;
+
+  if (newNumberOfGuests > 1) {
+    basePrice += (newNumberOfGuests - 1) * property.price_per_extra_guest;
+  }
+  const newTotalPrice = numberOfNights * basePrice;
+
+  // 6. Update the record in the database
+  const updateData = {
+    check_in_date: newCheckIn,
+    check_out_date: newCheckOut,
+    number_of_guests: newNumberOfGuests,
+    total_price: newTotalPrice,
+  };
+
+  const { data: updatedBooking, error: updateError } = await supabase
+    .from("bookings")
+    .update(updateData)
+    .eq("id", id)
+    .select("*, properties(*)") // Return the updated record with property data
+    .single();
+
+  if (updateError) {
+    throw new Error(updateError.message);
+  }
+
+  return updatedBooking;
 };

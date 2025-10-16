@@ -1,19 +1,13 @@
-"use client"; // Adding this line at the very beginning of the file
+"use client";
 
+import { usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import "./globals.css";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
-import { WelcomeScreen } from "@/components/WelcomeScreen";
 
-// Remove metadata export
-// export const metadata: Metadata = {
-//   title: "BNB App",
-//   description: "BNB Application",
-// };
-
-// Create a separate component for rendering content to use useAuth
 const AppContent = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
+  const pathname = usePathname();
 
   if (loading) {
     return (
@@ -25,7 +19,7 @@ const AppContent = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <Header />
+      {pathname !== "/" && <Header />}
       {children}
     </>
   );
