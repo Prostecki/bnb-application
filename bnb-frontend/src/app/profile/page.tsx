@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
 import EditPropertyModal from "@/components/properties/EditPropertyModal";
+import EditBookingModal from "@/components/bookings/EditBookingModal"; // Import the new modal
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
 
@@ -15,6 +16,7 @@ const ProfilePage = () => {
   const [error, setError] = useState("");
   const [addProperty, setAddProperty] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null); // State for the new modal
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
@@ -140,6 +142,11 @@ const ProfilePage = () => {
     setEditingProperty(null);
   };
 
+  const handleBookingUpdated = () => {
+    fetchUserData();
+    setEditingBooking(null);
+  };
+
   if (authLoading) {
     return (
       <div className="container mx-auto p-4">Loading authentication...</div>
@@ -184,6 +191,15 @@ const ProfilePage = () => {
           isOpen={!!editingProperty}
           onClose={() => setEditingProperty(null)}
           onPropertyUpdated={handlePropertyUpdated}
+        />
+      )}
+
+      {editingBooking && (
+        <EditBookingModal
+          booking={editingBooking}
+          isOpen={!!editingBooking}
+          onClose={() => setEditingBooking(null)}
+          onBookingUpdated={handleBookingUpdated}
         />
       )}
 
@@ -253,7 +269,13 @@ const ProfilePage = () => {
                     <p className="mt-2 font-semibold">
                       Total Price: ${booking.total_price}
                     </p>
-                    <div className="mt-4">
+                    <div className="mt-4 flex space-x-2">
+                      <button
+                        onClick={() => setEditingBooking(booking)}
+                        className="btn btn-sm btn-info btn-outline"
+                      >
+                        Edit
+                      </button>
                       <button
                         onClick={() => handleCancelBooking(booking.id)}
                         className="btn btn-sm btn-error btn-outline"

@@ -1,0 +1,163 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import type { Booking } from "@/models/booking.model";
+
+interface EditBookingModalProps {
+  booking: Booking;
+  isOpen: boolean;
+  onClose: () => void;
+  onBookingUpdated: () => void;
+}
+
+const EditBookingModal = ({
+  booking,
+  isOpen,
+  onClose,
+  onBookingUpdated,
+}: EditBookingModalProps) => {
+  const [guestFullName, setGuestFullName] = useState(booking.guest_full_name);
+  const [guestEmail, setGuestEmail] = useState(booking.guest_email);
+  const [guestPhoneNumber, setGuestPhoneNumber] = useState(
+    booking.guest_phone_number
+  );
+  const [numberOfGuests, setNumberOfGuests] = useState(booking.number_of_guests);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    // Reset fields when a new booking is passed in
+    setGuestFullName(booking.guest_full_name);
+    setGuestEmail(booking.guest_email);
+    setGuestPhoneNumber(booking.guest_phone_number);
+    setNumberOfGuests(booking.number_of_guests);
+  }, [booking]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authentication token not found.");
+      return;
+    }
+
+    const updatedData: Partial<Booking> = {
+      guestFullName,
+      guestEmail,
+      guestPhoneNumber,
+      numberOfGuests,
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/bookings/${booking.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update booking.");
+      }
+
+      setSuccess("Booking updated successfully!");
+      setTimeout(() => {
+        onBookingUpdated();
+        onClose();
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md max-h-full overflow-y-auto text-black">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h2 className="text-2xl font-semibold mb-4">Edit Booking</h2>
+          {error && <p className="text-red-500">{error}</p>}
+          {success && <p className="text-green-500">{success}</p>}
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Guest Full Name</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered w-full text-black"
+              value={guestFullName}
+              onChange={(e) => setGuestFullName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Guest Email</span>
+            </label>
+            <input
+              type="email"
+              className="input input-bordered w-full text-black"
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Guest Phone Number</span>
+            </label>
+            <input
+              type="tel"
+              className="input input-bordered w-full text-black"
+              value={guestPhoneNumber}
+              onChange={(e) => setGuestPhoneNumber(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Number of Guests</span>
+            </label>
+            <input
+              type="number"
+              min="1"
+              className="input input-bordered w-full text-black"
+              value={numberOfGuests}
+              onChange={(e) => setNumberOfGuests(Number(e.target.value))}
+              required
+            />
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn btn-ghost"
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditBookingModal;

@@ -188,8 +188,9 @@ export const deleteBooking = async (
 export const updateBooking = async (
   id: string | number,
   userId: string,
-  newBookingData: any
+  newBookingData: Partial<Booking>
 ) => {
+  // First, verify the user is authorized and the booking is changeable
   const { data: existingBooking, error: fetchError } = await supabase
     .from("bookings")
     .select("user_id, check_in_date")
@@ -213,19 +214,34 @@ export const updateBooking = async (
     throw new Error("Booking cannot be changed within 48 hours of check-in.");
   }
 
-  // Price recalculation logic is removed. The trigger will handle it.
-  const {
-    checkInDate: newCheckIn,
-    checkOutDate: newCheckOut,
-    numberOfGuests: newNumberOfGuests,
-  } = newBookingData;
-
-  const updateData = {
-    check_in_date: newCheckIn,
-    check_out_date: newCheckOut,
-    number_of_guests: newNumberOfGuests,
+  // Defines the mapping from frontend camelCase to backend snake_case
+  const keyMapping: { [key: string]: string } = {
+    checkInDate: "check_in_date",
+    checkOutDate: "check_out_date",
+    numberOfGuests: "number_of_guests",
+    guestFullName: "guest_full_name",
+    guestEmail: "guest_email",
+    guestPhoneNumber: "guest_phone_number",
   };
 
+  const updateData: { [key: string]: any } = {};
+
+  // Loop over the keys in the incoming data and build the update object
+  for (const key in newBookingData) {
+    if (Object.prototype.hasOwnProperty.call(newBookingData, key)) {
+      const typedKey = key as keyof Booking;
+      const value = newBookingData[typedKey];
+
+      const mappedKey = keyMapping[typedKey] || typedKey;
+      updateData[mappedKey] = value;
+    }
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    throw new Error("No fields to update provided.");
+  }
+
+  // Send the dynamically built object to the database
   const { data: updatedBooking, error: updateError } = await supabase
     .from("bookings")
     .update(updateData)
