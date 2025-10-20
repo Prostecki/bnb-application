@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import type { Property } from "../../models/property.model";
+import { DayPicker, type DateRange } from "react-day-picker";
+import { eachDayOfInterval, format, parseISO } from "date-fns";
+import "react-day-picker/dist/style.css";
 
 interface EditPropertyModalProps {
   isOpen: boolean;
@@ -23,8 +26,19 @@ const EditPropertyModal = ({
     property.pricePerExtraGuest
   );
   const [imageUrl, setImageUrl] = useState(property.imageUrl);
+  const [availability, setAvailability] = useState<Date[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    // Pre-populate the calendar with existing availability
+    if (property.availability) {
+      const availableDates = property.availability.map((dateStr) =>
+        parseISO(dateStr)
+      );
+      setAvailability(availableDates);
+    }
+  }, [property.availability]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +50,9 @@ const EditPropertyModal = ({
       setError("Authentication token not found.");
       return;
     }
+
+    // Convert selected dates to an array of yyyy-MM-dd strings
+    const availabilityDates = availability.map((date) => format(date, "yyyy-MM-dd"));
 
     try {
       const response = await fetch(
@@ -53,6 +70,7 @@ const EditPropertyModal = ({
             pricePerNight,
             pricePerExtraGuest,
             imageUrl,
+            availability: availabilityDates,
           }),
         }
       );
@@ -160,6 +178,24 @@ const EditPropertyModal = ({
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               className="w-full p-2 border border-black rounded text-black"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Edit Availability
+            </label>
+            <p className="text-xs text-gray-500 mb-2">
+              Select the dates when your property is available for booking.
+            </p>
+            <DayPicker
+              mode="multiple"
+              min={0} // Allow selecting multiple individual dates
+              selected={availability}
+              onSelect={setAvailability}
+              numberOfMonths={2}
+              disabled={{ before: new Date() }}
+              className="border rounded-lg"
               required
             />
           </div>

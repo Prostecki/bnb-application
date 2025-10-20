@@ -73,6 +73,7 @@ export const createProperty = async (
     pricePerNight,
     pricePerExtraGuest,
     imageUrl,
+    availability, // Added availability
   } = property;
   const propertyToCreate = {
     name,
@@ -82,6 +83,7 @@ export const createProperty = async (
     price_per_extra_guest: pricePerExtraGuest,
     image_url: imageUrl,
     user_id: userId,
+    availability: availability || [], // Added availability
   };
   const { data, error } = await supabase
     .from("properties")
@@ -99,26 +101,29 @@ export const updateProperty = async (
   property: Partial<Property>,
   userId: string
 ) => {
-  // RLS policies in the database will handle authorization.
-  // The manual check `if (existingProperty.user_id !== userId)` has been removed.
-
-  const {
-    name,
-    description,
-    location,
-    pricePerNight,
-    pricePerExtraGuest,
-    imageUrl,
-  } = property;
-  const propertyToUpdate = {
-    name,
-    description,
-    location,
-    price_per_night: pricePerNight,
-    price_per_extra_guest: pricePerExtraGuest,
-    image_url: imageUrl,
+  // 1. Create an object with all possible fields mapped.
+  const propertyToUpdate: { [key: string]: any } = {
+    name: property.name,
+    description: property.description,
+    location: property.location,
+    price_per_night: property.pricePerNight,
+    price_per_extra_guest: property.pricePerExtraGuest,
+    image_url: property.imageUrl,
+    availability: property.availability,
   };
 
+  // 2. Remove any property that wasn't included in the form data.
+  Object.keys(propertyToUpdate).forEach((key) => {
+    if (propertyToUpdate[key as keyof typeof propertyToUpdate] === undefined) {
+      delete propertyToUpdate[key as keyof typeof propertyToUpdate];
+    }
+  });
+
+  if (Object.keys(propertyToUpdate).length === 0) {
+    throw new Error("No fields to update provided.");
+  }
+
+  // 3. Send the cleaned object to the database.
   const { data, error } = await supabase
     .from("properties")
     .update(propertyToUpdate)

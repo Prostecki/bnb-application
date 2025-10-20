@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
+import "react-day-picker/dist/style.css";
 
 interface Property {
   id: string;
@@ -11,6 +14,7 @@ interface Property {
   pricePerNight: number;
   pricePerExtraGuest: number;
   imageUrl: string;
+  availability: string[];
 }
 
 interface CreatePropertyFormProps {
@@ -24,6 +28,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
   const [pricePerNight, setPricePerNight] = useState(0);
   const [pricePerExtraGuest, setPricePerExtraGuest] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
+  const [availability, setAvailability] = useState<Date[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { user } = useAuth();
@@ -44,6 +49,16 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
       return;
     }
 
+    // Convert selected dates to an array of yyyy-MM-dd strings
+    const availabilityDates = availability.map((date) =>
+      format(date, "yyyy-MM-dd")
+    );
+
+    if (availabilityDates.length === 0) {
+      setError("Please select at least one availability date.");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3000/api/properties", {
         method: "POST",
@@ -58,6 +73,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
           pricePerNight,
           pricePerExtraGuest,
           imageUrl,
+          availability: availabilityDates,
         }),
       });
 
@@ -74,6 +90,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
       setPricePerNight(0);
       setPricePerExtraGuest(0);
       setImageUrl("");
+      setAvailability([]);
       // Notify parent component
       onPropertyCreated();
     } catch (err: any) {
@@ -163,6 +180,24 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           className="w-full p-2 border rounded"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          Set Availability
+        </label>
+        <p className="text-xs text-gray-500 mb-2">
+          Select the dates when your property is available for booking.
+        </p>
+        <DayPicker
+          mode="multiple"
+          min={0}
+          selected={availability}
+          onSelect={setAvailability}
+          numberOfMonths={2}
+          disabled={{ before: new Date() }}
+          className="border rounded-lg"
           required
         />
       </div>
