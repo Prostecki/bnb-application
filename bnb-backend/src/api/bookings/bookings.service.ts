@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase.js";
 import type { Booking } from "../../models/booking.model.js";
+import { eachDayOfInterval, format } from "date-fns";
 
 export const createBooking = async (
   bookingData: Pick<
@@ -32,7 +33,33 @@ export const createBooking = async (
     throw new Error("Number of guests must be at least 1.");
   }
 
-  // Availability Check
+  // 1. Check against the property's general availability list
+  const { data: property, error: propertyError } = await supabase
+    .from("properties")
+    .select("availability")
+    .eq("id", propertyId)
+    .single();
+
+  if (propertyError || !property) {
+    throw new Error("Property not found or could not be fetched.");
+  }
+
+  const availableDates = new Set(property.availability || []);
+  const requestedDates = eachDayOfInterval({
+    start: new Date(checkInDate),
+    end: new Date(checkOutDate),
+  });
+
+  for (const date of requestedDates) {
+    const dateString = format(date, "yyyy-MM-dd");
+    if (!availableDates.has(dateString)) {
+      throw new Error(
+        `Date ${dateString} is not available for booking for this property.`
+      );
+    }
+  }
+
+  // 2. Check for conflicting bookings (existing availability check)
   const { data: conflictingBookings, error: availabilityError } = await supabase
     .from("bookings")
     .select("id")
