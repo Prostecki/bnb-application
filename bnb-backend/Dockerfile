@@ -13,6 +13,9 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Run tests
+RUN npm test
+
 # Build the TypeScript code
 RUN npm run build
 

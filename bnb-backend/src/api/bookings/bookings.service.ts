@@ -50,6 +50,12 @@ export const createBooking = async (
     end: new Date(checkOutDate),
   });
 
+  // The last day is the check-out day and is not part of the stay.
+  //For instanse, a booking from the 13th to the 14th is a 1-night stay on the 13th.
+  if (requestedDates.length > 0) {
+    requestedDates.pop();
+  }
+
   for (const date of requestedDates) {
     const dateString = format(date, "yyyy-MM-dd");
     if (!availableDates.has(dateString)) {

@@ -59,8 +59,8 @@ export default function BookingModal({
 
     const bookingData = {
       propertyId,
-      checkInDate: range.from.toISOString(),
-      checkOutDate: range.to.toISOString(),
+      checkInDate: format(range.from, "yyyy-MM-dd"),
+      checkOutDate: format(range.to, "yyyy-MM-dd"),
       numberOfGuests,
       guestFullName, // Use state value
       guestEmail, // Use state value

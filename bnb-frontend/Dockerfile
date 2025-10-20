@@ -13,6 +13,9 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Run tests
+RUN npm test
+
 # Build the Next.js application
 RUN npm run build
 

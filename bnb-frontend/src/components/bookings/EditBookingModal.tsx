@@ -16,21 +16,23 @@ const EditBookingModal = ({
   onClose,
   onBookingUpdated,
 }: EditBookingModalProps) => {
-  const [guestFullName, setGuestFullName] = useState(booking.guest_full_name);
-  const [guestEmail, setGuestEmail] = useState(booking.guest_email);
+  const [guestFullName, setGuestFullName] = useState(booking.guestFullName);
+  const [guestEmail, setGuestEmail] = useState(booking.guestEmail);
   const [guestPhoneNumber, setGuestPhoneNumber] = useState(
-    booking.guest_phone_number
+    booking.guestPhoneNumber
   );
-  const [numberOfGuests, setNumberOfGuests] = useState(booking.number_of_guests);
+  const [numberOfGuests, setNumberOfGuests] = useState(
+    booking.number_of_guests
+  );
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
     // Reset fields when a new booking is passed in
-    setGuestFullName(booking.guest_full_name);
-    setGuestEmail(booking.guest_email);
-    setGuestPhoneNumber(booking.guest_phone_number);
-    setNumberOfGuests(booking.number_of_guests);
+    setGuestFullName(booking.guestFullName);
+    setGuestEmail(booking.guestEmail);
+    setGuestPhoneNumber(booking.guestPhoneNumber);
+    setNumberOfGuests(booking.numberOfGuests);
   }, [booking]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,11 +145,7 @@ const EditBookingModal = ({
           </div>
 
           <div className="flex justify-end space-x-4 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-ghost"
-            >
+            <button type="button" onClick={onClose} className="btn btn-ghost">
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
