@@ -19,7 +19,7 @@ const AppContent = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      {pathname !== "/" && <Header />}
+      <Header />
       {children}
     </>
   );

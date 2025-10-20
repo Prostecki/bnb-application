@@ -165,9 +165,31 @@ const ProfilePage = () => {
         </p>
       </div>
 
+      <button
+        onClick={() => setAddProperty((prev) => !prev)}
+        className="border p-2 rounded-md bg-blue-400/80 text-white drop-shadow-md"
+      >
+        {addProperty ? "Hide form" : "Add property"}
+      </button>
+
+      {addProperty && (
+        <div className="mt-12">
+          <CreatePropertyForm onPropertyCreated={fetchUserData} />
+        </div>
+      )}
+
+      {editingProperty && (
+        <EditPropertyModal
+          property={editingProperty}
+          isOpen={!!editingProperty}
+          onClose={() => setEditingProperty(null)}
+          onPropertyUpdated={handlePropertyUpdated}
+        />
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <section>
-          <h2 className="text-2xl font-semibold mb-4">My Properties</h2>
+          <h2 className="text-2xl font-semibold mb-4">My Properties:</h2>
           {properties.length > 0 ? (
             <ul className="space-y-4">
               {properties.map((property) => (
@@ -248,28 +270,6 @@ const ProfilePage = () => {
           )}
         </section>
       </div>
-
-      <button
-        onClick={() => setAddProperty((prev) => !prev)}
-        className="border p-2 rounded-md bg-blue-400/80 text-white drop-shadow-md"
-      >
-        {addProperty ? "Hide form" : "Add property"}
-      </button>
-
-      {addProperty && (
-        <div className="mt-12">
-          <CreatePropertyForm onPropertyCreated={fetchUserData} />
-        </div>
-      )}
-
-      {editingProperty && (
-        <EditPropertyModal
-          property={editingProperty}
-          isOpen={!!editingProperty}
-          onClose={() => setEditingProperty(null)}
-          onPropertyUpdated={handlePropertyUpdated}
-        />
-      )}
     </div>
   );
 };
