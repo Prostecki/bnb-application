@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Property } from "@/models/property.model";
 import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
 import EditPropertyModal from "@/components/properties/EditPropertyModal";
@@ -10,10 +10,17 @@ interface MyPropertiesProps {
   onDataChange: () => void; // Callback to refetch data in the parent
 }
 
-const MyProperties = ({ initialProperties, onDataChange }: MyPropertiesProps) => {
+const MyProperties = ({
+  initialProperties,
+  onDataChange,
+}: MyPropertiesProps) => {
   const [properties, setProperties] = useState<Property[]>(initialProperties);
   const [addProperty, setAddProperty] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+
+  useEffect(() => {
+    setProperties(initialProperties);
+  }, [initialProperties]);
 
   const handleDeleteProperty = async (propertyId: string) => {
     if (window.confirm("Are you sure you want to delete this property?")) {

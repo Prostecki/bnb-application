@@ -16,23 +16,23 @@ const EditBookingModal = ({
   onClose,
   onBookingUpdated,
 }: EditBookingModalProps) => {
-  const [guestFullName, setGuestFullName] = useState(booking.guestFullName);
-  const [guestEmail, setGuestEmail] = useState(booking.guestEmail);
+  const [guestFullName, setGuestFullName] = useState(booking.guestFullName || "");
+  const [guestEmail, setGuestEmail] = useState(booking.guestEmail || "");
   const [guestPhoneNumber, setGuestPhoneNumber] = useState(
-    booking.guestPhoneNumber
+    booking.guestPhoneNumber || ""
   );
   const [numberOfGuests, setNumberOfGuests] = useState(
-    booking.number_of_guests
+    booking.numberOfGuests || 1
   );
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
     // Reset fields when a new booking is passed in
-    setGuestFullName(booking.guestFullName);
-    setGuestEmail(booking.guestEmail);
-    setGuestPhoneNumber(booking.guestPhoneNumber);
-    setNumberOfGuests(booking.numberOfGuests);
+    setGuestFullName(booking.guestFullName || "");
+    setGuestEmail(booking.guestEmail || "");
+    setGuestPhoneNumber(booking.guestPhoneNumber || "");
+    setNumberOfGuests(booking.numberOfGuests || 1);
   }, [booking]);
 
   const handleSubmit = async (e: React.FormEvent) => {
