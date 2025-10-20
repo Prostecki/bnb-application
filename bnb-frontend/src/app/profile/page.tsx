@@ -3,9 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
-import EditPropertyModal from "@/components/properties/EditPropertyModal";
-import EditBookingModal from "@/components/bookings/EditBookingModal"; // Import the new modal
+import MyProperties from "@/components/profile/MyProperties";
+import MyBookings from "@/components/profile/MyBookings";
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
 
@@ -14,9 +13,6 @@ const ProfilePage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [addProperty, setAddProperty] = useState(false);
-  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-  const [editingBooking, setEditingBooking] = useState<Booking | null>(null); // State for the new modal
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
@@ -38,18 +34,13 @@ const ProfilePage = () => {
         Authorization: `Bearer ${token}`,
       };
 
-      // Fetch bookings and user's properties in parallel
       const [bookingsRes, propertiesRes] = await Promise.all([
         fetch("http://localhost:3000/api/bookings", { headers }),
         fetch("http://localhost:3000/api/properties/me", { headers }),
       ]);
 
-      if (!bookingsRes.ok) {
-        throw new Error("Failed to fetch bookings.");
-      }
-      if (!propertiesRes.ok) {
-        throw new Error("Failed to fetch your properties.");
-      }
+      if (!bookingsRes.ok) throw new Error("Failed to fetch bookings.");
+      if (!propertiesRes.ok) throw new Error("Failed to fetch properties.");
 
       const bookingsData = await bookingsRes.json();
       const propertiesData = await propertiesRes.json();
@@ -63,70 +54,6 @@ const ProfilePage = () => {
     }
   }, [isAuthenticated]);
 
-  const handleCancelBooking = async (bookingId: string) => {
-    if (window.confirm("Are you sure you want to cancel this booking?")) {
-      console.log("User confirmed. Cancelling booking:", bookingId);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Authentication error. Please log in again.");
-          return;
-        }
-        const res = await fetch(
-          `http://localhost:3000/api/bookings/${bookingId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || "Failed to cancel booking.");
-        }
-        setBookings((currentBookings) =>
-          currentBookings.filter((booking) => booking.id !== bookingId)
-        );
-        alert("Booking cancelled successfully!");
-      } catch (err: any) {
-        alert(`Error: ${err.message}`);
-      }
-    }
-  };
-
-  const handleDeleteProperty = async (propertyId: string) => {
-    console.log("Property ID:", propertyId);
-    if (window.confirm("Are you sure you want to delete this property?")) {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("Authentication error. Please log in again.");
-          return;
-        }
-        const res = await fetch(
-          `http://localhost:3000/api/properties/${propertyId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.errror || "Failed to delete property.");
-        }
-        setProperties((currentProperty) =>
-          currentProperty.filter((property) => property.id !== propertyId)
-        );
-        alert("Property deleted successfully!");
-      } catch (err: any) {
-        alert(`Error: ${err.message}`);
-      }
-    }
-  };
-
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push("/login");
@@ -137,23 +64,7 @@ const ProfilePage = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  const handlePropertyUpdated = () => {
-    fetchUserData();
-    setEditingProperty(null);
-  };
-
-  const handleBookingUpdated = () => {
-    fetchUserData();
-    setEditingBooking(null);
-  };
-
-  if (authLoading) {
-    return (
-      <div className="container mx-auto p-4">Loading authentication...</div>
-    );
-  }
-
-  if (loading) {
+  if (authLoading || loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
   }
 
@@ -168,129 +79,16 @@ const ProfilePage = () => {
           Welcome, {user?.name || user?.email || "User"}!
         </h1>
         <p className="text-2xl text-gray-600/80 underline italic">
-          {user?.isAdmin ? "Admin persmissions" : "User permissions"}
+          {user?.isAdmin ? "Admin permissions" : "User permissions"}
         </p>
       </div>
 
-      <button
-        onClick={() => setAddProperty((prev) => !prev)}
-        className="border p-2 rounded-md bg-blue-400/80 text-white drop-shadow-md"
-      >
-        {addProperty ? "Hide form" : "Add property"}
-      </button>
-
-      {addProperty && (
-        <div className="mt-12">
-          <CreatePropertyForm onPropertyCreated={fetchUserData} />
-        </div>
-      )}
-
-      {editingProperty && (
-        <EditPropertyModal
-          property={editingProperty}
-          isOpen={!!editingProperty}
-          onClose={() => setEditingProperty(null)}
-          onPropertyUpdated={handlePropertyUpdated}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+        <MyProperties
+          initialProperties={properties}
+          onDataChange={fetchUserData}
         />
-      )}
-
-      {editingBooking && (
-        <EditBookingModal
-          booking={editingBooking}
-          isOpen={!!editingBooking}
-          onClose={() => setEditingBooking(null)}
-          onBookingUpdated={handleBookingUpdated}
-        />
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">My Properties:</h2>
-          {properties.length > 0 ? (
-            <ul className="space-y-4">
-              {properties.map((property) => (
-                <li key={property.id} className="border p-4 rounded-lg shadow">
-                  <img
-                    src={property.imageUrl}
-                    alt={property.name}
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
-                  <h3 className="text-xl font-bold">{property.name}</h3>
-                  <p className="text-gray-600">{property.location}</p>
-                  <p className="mt-2">{property.description}</p>
-                  <div className="mt-4 font-semibold">
-                    <p>Price per night: ${property.pricePerNight}</p>
-                    <p>Price per extra guest: ${property.pricePerExtraGuest}</p>
-                  </div>
-                  <div className="mt-4 flex justify-around items-center">
-                    <button
-                      onClick={() => setEditingProperty(property)}
-                      className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProperty(property.id)}
-                      className="btn btn-sm btn-error btn-outline"
-                    >
-                      Delete Property
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>You haven't listed any properties yet.</p>
-          )}
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">My Bookings</h2>
-          {bookings.length > 0 ? (
-            <ul className="space-y-4">
-              {bookings.map((booking) => (
-                <li
-                  key={booking.id}
-                  className="border p-4 rounded-lg shadow flex items-center"
-                >
-                  <img
-                    src={booking.properties?.image_url}
-                    alt={booking.properties?.name}
-                    className="w-24 h-24 object-cover rounded-md mr-4"
-                  />
-                  <div>
-                    <h3 className="text-xl font-bold">
-                      {booking.properties?.name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {new Date(booking.check_in_date).toLocaleDateString()} -{" "}
-                      {new Date(booking.check_out_date).toLocaleDateString()}
-                    </p>
-                    <p className="mt-2 font-semibold">
-                      Total Price: ${booking.total_price}
-                    </p>
-                    <div className="mt-4 flex space-x-2">
-                      <button
-                        onClick={() => setEditingBooking(booking)}
-                        className="btn btn-sm btn-info btn-outline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleCancelBooking(booking.id)}
-                        className="btn btn-sm btn-error btn-outline"
-                      >
-                        Cancel Booking
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>You don't have any bookings yet!</p>
-          )}
-        </section>
+        <MyBookings initialBookings={bookings} onDataChange={fetchUserData} />
       </div>
     </div>
   );
