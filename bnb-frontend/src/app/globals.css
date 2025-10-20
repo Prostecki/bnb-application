@@ -98,3 +98,9 @@ body {
 .rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
   background-color: #e5e7eb;
 }
+
+/* Explicit hover for available days */
+.available-day:hover {
+  background-color: #bbf7d0 !important; /* light green */
+  color: #15803d !important; /* dark green */
+}

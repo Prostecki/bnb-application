@@ -52,7 +52,9 @@ const EditPropertyModal = ({
     }
 
     // Convert selected dates to an array of yyyy-MM-dd strings
-    const availabilityDates = availability.map((date) => format(date, "yyyy-MM-dd"));
+    const availabilityDates = availability.map((date) =>
+      format(date, "yyyy-MM-dd")
+    );
 
     try {
       const response = await fetch(

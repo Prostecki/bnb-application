@@ -131,16 +131,42 @@ export default function PropertyPage() {
             mode="range"
             selected={range}
             onSelect={setRange}
-            disabled={isDateDisabled}
             numberOfMonths={1}
             className="border rounded-lg p-4 justify-self-center"
             modifiers={{
-              available: property.availability?.map(
-                (dateStr) => new Date(dateStr)
-              ),
+              booked: bookedDates,
+              disabled: isDateDisabled,
+              available: (date: Date) => {
+                if (isDateDisabled(date)) return false;
+                if (
+                  range?.from &&
+                  range.to &&
+                  date > range.from &&
+                  date < range.to
+                ) {
+                  return false; // Don't style dates inside the selected range
+                }
+                return true;
+              },
+            }}
+            modifiersClassNames={{
+              available: "available-day",
             }}
             modifiersStyles={{
-              available: { backgroundColor: "#dcfce7" },
+              booked: {
+                backgroundColor: "#fee2e2",
+                color: "#dc2626",
+                textDecoration: "line-through",
+              },
+              available: {
+                backgroundColor: "#dcfce7",
+                color: "#16a34a",
+              },
+              disabled: { 
+                backgroundColor: "white",
+                color: "#d1d5db",
+                cursor: "default",
+              },
             }}
           />
           {range?.from && (

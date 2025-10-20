@@ -84,7 +84,7 @@ const EditBookingModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex justify-center items-center p-4 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md max-h-full overflow-y-auto text-black">
         <form onSubmit={handleSubmit} className="space-y-4">
           <h2 className="text-2xl font-semibold mb-4">Edit Booking</h2>

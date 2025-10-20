@@ -4,14 +4,32 @@ services:
       context: ./bnb-backend
     ports:
       - "3000:3000"
-    # If you have a .env file in your backend, you can uncomment the next line
-    # env_file:
-    #   - ./bnb-backend/.env
+    # Run the development server for hot-reloading
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: ./bnb-backend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./bnb-backend/package.json
 
   frontend:
     build:
       context: ./bnb-frontend
     ports:
       - "8080:8080"
-    depends_on:
-      - backend
+    # Run the development server for hot-reloading
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: ./bnb-frontend
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: ./bnb-frontend/package.json
