@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./bnb-backend
+    ports:
+      - "3000:3000"
+    # If you have a .env file in your backend, you can uncomment the next line
+    # env_file:
+    #   - ./bnb-backend/.env
+
+  frontend:
+    build:
+      context: ./bnb-frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
