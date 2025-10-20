@@ -33,10 +33,12 @@ export default function PropertyPage() {
           const bookings: { check_in_date: string; check_out_date: string }[] =
             await res.json();
 
+          //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap
           const disabledDates = bookings.flatMap((booking) => {
             const startDate = parseISO(booking.check_in_date);
             const endDate = parseISO(booking.check_out_date);
-            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return [];
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()))
+              return [];
             return eachDayOfInterval({ start: startDate, end: endDate });
           });
 
@@ -132,6 +134,14 @@ export default function PropertyPage() {
             disabled={isDateDisabled}
             numberOfMonths={1}
             className="border rounded-lg p-4 justify-self-center"
+            modifiers={{
+              available: property.availability?.map(
+                (dateStr) => new Date(dateStr)
+              ),
+            }}
+            modifiersStyles={{
+              available: { backgroundColor: "#dcfce7" },
+            }}
           />
           {range?.from && (
             <button

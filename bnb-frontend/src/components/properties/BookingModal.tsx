@@ -23,6 +23,8 @@ export default function BookingModal({
   const modalRef = useRef<HTMLDialogElement>(null);
   const { user } = useAuth();
   const [numberOfGuests, setNumberOfGuests] = useState(1);
+  const [guestFullName, setGuestFullName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
   const [guestPhoneNumber, setGuestPhoneNumber] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -30,10 +32,15 @@ export default function BookingModal({
   useEffect(() => {
     if (isOpen) {
       modalRef.current?.showModal();
+      // Pre-fill guest info with logged-in user's data
+      if (user) {
+        setGuestFullName(user.name);
+        setGuestEmail(user.email);
+      }
     } else {
       modalRef.current?.close();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +62,8 @@ export default function BookingModal({
       checkInDate: range.from.toISOString(),
       checkOutDate: range.to.toISOString(),
       numberOfGuests,
-      guestFullName: user.name,
-      guestEmail: user.email,
+      guestFullName, // Use state value
+      guestEmail, // Use state value
       guestPhoneNumber,
     };
 
@@ -114,6 +121,30 @@ export default function BookingModal({
         <h3 className="font-bold text-lg">Confirm Your Booking</h3>
         <form onSubmit={handleBookingSubmit}>
           <div className="form-control py-4">{renderBookingSummary()}</div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Guest Full Name</span>
+            </label>
+            <input
+              type="text"
+              className="input input-bordered"
+              value={guestFullName}
+              onChange={(e) => setGuestFullName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Guest Email</span>
+            </label>
+            <input
+              type="email"
+              className="input input-bordered"
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
+              required
+            />
+          </div>
           <div className="form-control">
             <label className="label">
               <span className="label-text">Number of Guests</span>
