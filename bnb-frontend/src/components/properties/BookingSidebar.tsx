@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DayPicker, type DateRange } from "react-day-picker";
-import { eachDayOfInterval, parseISO, isSameDay, format } from "date-fns";
+import { isSameDay, format } from "date-fns";
 import PropertyDetailCard from "./PropertyDetailCard";
 import type { Property } from "@/models/property.model";
 
@@ -19,55 +19,15 @@ const BookingSidebar = ({
   range,
   setRange,
 }: BookingSidebarProps) => {
-  const [bookedDates, setBookedDates] = useState<Date[]>([]);
-
-  useEffect(() => {
-    if (property) {
-      const fetchBookings = async () => {
-        try {
-          const res = await fetch(
-            `http://localhost:3000/api/properties/${property.id}/bookings`
-          );
-          if (!res.ok) throw new Error("Failed to fetch booked dates.");
-          const bookings: { check_in_date: string; check_out_date: string }[] =
-            await res.json();
-
-          const disabledDates = bookings.flatMap((booking) => {
-            const startDate = parseISO(booking.check_in_date);
-            const endDate = parseISO(booking.check_out_date);
-            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return [];
-            return eachDayOfInterval({ start: startDate, end: endDate });
-          });
-
-          setBookedDates(disabledDates);
-        } catch (err) {
-          console.error("Error fetching bookings:", err);
-        }
-      };
-
-      fetchBookings();
-    }
-  }, [property]);
-
   const isDateDisabled = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     if (date < today) return true;
 
-    if (bookedDates.some((bookedDate) => isSameDay(date, bookedDate))) {
-      return true;
-    }
+    const dateString = format(date, "yyyy-MM-dd");
 
-    if (property.availability && property.availability.length > 0) {
-      const availableDatesSet = new Set(property.availability);
-      const dateString = format(date, "yyyy-MM-dd");
-      if (!availableDatesSet.has(dateString)) {
-        return true;
-      }
-    }
-
-    return false;
+    // A date is disabled if it's NOT in the list of still available dates.
+    return !property.stillAvailableDates.includes(dateString);
   };
 
   return (
@@ -79,15 +39,9 @@ const BookingSidebar = ({
         numberOfMonths={1}
         className="border rounded-lg p-4 justify-self-center"
         modifiers={{
-          booked: bookedDates,
+          booked: property.bookedDates.map((d) => new Date(d)),
           disabled: isDateDisabled,
-          available: (date: Date) => {
-            if (isDateDisabled(date)) return false;
-            if (range?.from && range.to && date > range.from && date < range.to) {
-              return false; // Don't style dates inside the selected range
-            }
-            return true;
-          },
+          available: (date: Date) => !isDateDisabled(date),
         }}
         modifiersClassNames={{
           available: "available-day",

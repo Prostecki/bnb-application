@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Booking } from "@/models/booking.model";
 import EditBookingModal from "@/components/bookings/EditBookingModal";
 
@@ -12,6 +12,10 @@ interface MyBookingsProps {
 const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+
+  useEffect(() => {
+    setBookings(initialBookings);
+  }, [initialBookings]);
 
   const handleCancelBooking = async (bookingId: string) => {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
@@ -79,12 +83,13 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
                   {booking.properties?.name}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {new Date(booking.check_in_date).toLocaleDateString()} -{" "}
-                  {new Date(booking.check_out_date).toLocaleDateString()}
+                  {new Date(booking.checkInDate).toLocaleDateString()} -{" "}
+                  {new Date(booking.checkOutDate).toLocaleDateString()}
                 </p>
                 <p className="mt-2 font-semibold">
-                  Total Price: ${booking.total_price}
+                  Total Price: ${booking.totalPrice}
                 </p>
+                <p>Guest Full Name: {booking?.guestFullName}</p>
                 <div className="mt-4 flex space-x-2">
                   <button
                     onClick={() => setEditingBooking(booking)}

@@ -1,6 +1,7 @@
 import { supabase } from "../../lib/supabase.js";
 import type { Property } from "../../models/property.model.js";
 import type { User } from "../../models/user.model.js";
+import { eachDayOfInterval, format } from "date-fns";
 
 interface PropertyFromDb {
   id: number;
@@ -11,11 +12,12 @@ interface PropertyFromDb {
   price_per_extra_guest: number;
   image_url: string;
   user_id: string;
-  availability: string[] | null; // Array of date strings from database
+  availability: string[] | null;
   user: User;
+  bookings: any[]; // Comes from the join
 }
 
-const mapToCamelCase = (property: PropertyFromDb): Property => ({
+const mapToCamelCase = (property: PropertyFromDb): any => ({
   id: property.id,
   name: property.name,
   description: property.description,
@@ -25,7 +27,8 @@ const mapToCamelCase = (property: PropertyFromDb): Property => ({
   imageUrl: property.image_url,
   userId: property.user_id,
   user: property.user,
-  availability: property.availability || [], // Use availability from database or empty array
+  availability: property.availability || [],
+  bookings: property.bookings || [],
 });
 
 export const getProperties = async () => {
@@ -41,25 +44,76 @@ export const getProperties = async () => {
 export const getPropertiesByUserId = async (userId: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*, availability, user:users(*)")
+    .select("*, availability, user:users(*), bookings(*)")
     .eq("user_id", userId);
+
   if (error) {
     throw new Error(error.message);
   }
-  return data.map(mapToCamelCase);
+
+  const processedData = data.map((property) => {
+    const camelCased = mapToCamelCase(property as any);
+
+    const bookedDateStrings = new Set(
+      camelCased.bookings?.flatMap((b: any) =>
+        eachDayOfInterval({
+          start: new Date(b.check_in_date),
+          end: new Date(b.check_out_date),
+        })
+          .slice(0, -1) // Exclude check-out day
+          .map((d: Date) => format(d, "yyyy-MM-dd"))
+      ) || []
+    );
+
+    const stillAvailableDates = camelCased.availability.filter(
+      (availDate: string) => !bookedDateStrings.has(availDate)
+    );
+
+    return {
+      ...camelCased,
+      stillAvailableDates,
+      bookedDates: Array.from(bookedDateStrings).sort(),
+      bookings: undefined, // Remove original bookings array
+    };
+  });
+
+  return processedData;
 };
 
 export const getPropertyById = async (id: string) => {
   const { data, error } = await supabase
     .from("properties")
-    .select("*, availability, user:users(*)")
+    .select("*, availability, user:users(*), bookings(*)")
     .eq("id", id)
     .single();
 
   if (error) {
     throw new Error(error.message);
   }
-  return mapToCamelCase(data);
+
+  const camelCased = mapToCamelCase(data as any);
+
+  const bookedDateStrings = new Set(
+    camelCased.bookings?.flatMap((b: any) =>
+      eachDayOfInterval({
+        start: new Date(b.check_in_date),
+        end: new Date(b.check_out_date),
+      })
+        .slice(0, -1) // Exclude check-out day
+        .map((d: Date) => format(d, "yyyy-MM-dd"))
+    ) || []
+  );
+
+  const stillAvailableDates = camelCased.availability.filter(
+    (availDate: string) => !bookedDateStrings.has(availDate)
+  );
+
+  return {
+    ...camelCased,
+    stillAvailableDates,
+    bookedDates: Array.from(bookedDateStrings).sort(),
+    bookings: undefined,
+  };
 };
 
 export const createProperty = async (

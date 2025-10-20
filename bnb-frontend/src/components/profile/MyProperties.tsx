@@ -102,6 +102,49 @@ const MyProperties = ({
               <h3 className="text-xl font-bold">{property.name}</h3>
               <p className="text-gray-600">{property.location}</p>
               <p className="mt-2">{property.description}</p>
+
+              <div className="mt-2">
+                <h4 className="font-semibold">Still Available:</h4>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {property.stillAvailableDates?.length > 0 ? (
+                    property.stillAvailableDates.map((date) => (
+                      <div
+                        key={date}
+                        className="badge badge-success badge-outline"
+                      >
+                        {new Date(date).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          timeZone: "UTC",
+                        })}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      No remaining availability.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-2">
+                <h4 className="font-semibold">Booked Dates:</h4>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {property.bookedDates?.map((date) => (
+                    <div
+                      key={date}
+                      className="badge badge-error badge-outline"
+                    >
+                      {new Date(date).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        timeZone: "UTC",
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="mt-4 font-semibold">
                 <p>Price per night: ${property.pricePerNight}</p>
                 <p>Price per extra guest: ${property.pricePerExtraGuest}</p>

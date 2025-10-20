@@ -8,6 +8,19 @@ import MyBookings from "@/components/profile/MyBookings";
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
 
+// Helper to map incoming snake_case data to camelCase
+const mapBookingToCamelCase = (booking: any): Booking => ({
+  id: booking.id,
+  checkInDate: booking.check_in_date,
+  checkOutDate: booking.check_out_date,
+  numberOfGuests: booking.number_of_guests,
+  totalPrice: booking.total_price,
+  guestFullName: booking.guest_full_name,
+  guestEmail: booking.guest_email,
+  guestPhoneNumber: booking.guest_phone_number,
+  properties: booking.properties,
+});
+
 const ProfilePage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -45,7 +58,7 @@ const ProfilePage = () => {
       const bookingsData = await bookingsRes.json();
       const propertiesData = await propertiesRes.json();
 
-      setBookings(bookingsData || []);
+      setBookings(bookingsData.map(mapBookingToCamelCase) || []);
       setProperties(propertiesData || []);
     } catch (err: any) {
       setError(err.message || "An error occurred while fetching data.");

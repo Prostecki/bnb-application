@@ -1,15 +1,14 @@
 export interface Booking {
   id: string;
-  check_in_date: string;
-  check_out_date: string;
-  number_of_guests: number;
-  total_price: number;
+  checkInDate: string;
+  checkOutDate: string;
+  numberOfGuests: number;
+  totalPrice: number;
   guestFullName: string;
   guestEmail: string;
   guestPhoneNumber: string;
-  numberOfGuests: number;
   properties: {
     name: string;
-    image_url: string;
+    image_url: string; // This can remain as is, as it's a nested property from another table
   } | null;
 }
