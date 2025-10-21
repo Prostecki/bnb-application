@@ -13,6 +13,7 @@ interface PropertyFromDb {
   image_url: string;
   user_id: string;
   availability: string[] | null;
+  additional_images: string[] | null;
   user: User;
   bookings: any[]; // Comes from the join
 }
@@ -28,6 +29,7 @@ const mapToCamelCase = (property: PropertyFromDb): any => ({
   userId: property.user_id,
   user: property.user,
   availability: property.availability || [],
+  additionalImages: property.additional_images || [],
   bookings: property.bookings || [],
 });
 
@@ -128,6 +130,7 @@ export const createProperty = async (
     pricePerExtraGuest,
     imageUrl,
     availability, // Added availability
+    additionalImages,
   } = property;
   const propertyToCreate = {
     name,
@@ -138,6 +141,7 @@ export const createProperty = async (
     image_url: imageUrl,
     user_id: userId,
     availability: availability || [], // Added availability
+    additional_images: additionalImages || [],
   };
   const { data, error } = await supabase
     .from("properties")
@@ -164,6 +168,7 @@ export const updateProperty = async (
     price_per_extra_guest: property.pricePerExtraGuest,
     image_url: property.imageUrl,
     availability: property.availability,
+    additional_images: property.additionalImages,
   };
 
   // 2. Remove any property that wasn't included in the form data.

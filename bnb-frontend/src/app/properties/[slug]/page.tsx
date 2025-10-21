@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useProperty } from "../../../hooks/useProperty";
 import BookingModal from "../../../components/properties/BookingModal";
@@ -18,6 +18,12 @@ export default function PropertyPage() {
   const [isBookingModalOpen, setBookingModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>();
+
+  useEffect(() => {
+    if (property) {
+      console.log("Property data:", property);
+    }
+  }, [property]);
 
   const toUpperCaseName = (str: string) => {
     if (!str) return "";
@@ -106,8 +112,21 @@ export default function PropertyPage() {
           <img
             src={property.imageUrl}
             alt={property.name}
-            className="w-full h-[500px] object-cover rounded-2xl shadow-2xl"
+            className="w-full h-[500px] object-cover rounded-2xl shadow-2xl mb-4"
           />
+          {property.additionalImages &&
+            property.additionalImages.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {property.additionalImages.map((img, index) => (
+                  <img
+                    className="w-full h-48 object-cover rounded-lg shadow-md"
+                    key={index}
+                    src={img}
+                    alt={`${property.name} additional image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
         </div>
 
         {/* Main Content */}
@@ -115,9 +134,7 @@ export default function PropertyPage() {
           {/* Left Column: Details */}
           <div className="lg:col-span-2 bg-base-100 p-8 rounded-2xl shadow-xl">
             <div className="border-b border-base-300 pb-6 mb-6">
-              <h2 className="text-2xl font-bold mb-2">
-                About this property
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">About this property</h2>
               <p className="text-base-content/80 leading-relaxed">
                 {property.description}
               </p>

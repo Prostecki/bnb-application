@@ -13,4 +13,5 @@ export interface Property {
   availability: string[];
   stillAvailableDates: string[];
   bookedDates: string[];
+  additionalImages: string[];
 }

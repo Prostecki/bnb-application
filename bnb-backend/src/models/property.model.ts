@@ -11,4 +11,5 @@ export interface Property {
   imageUrl: string;
   userId: string;
   user?: User;
+  additionalImages: string[];
 }
