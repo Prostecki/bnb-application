@@ -93,102 +93,115 @@ const EditPropertyModal = ({
     }
   };
 
-  const inputStyles =
-    "w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors";
-
   return (
-    <div className="fixed inset-0 bg-gray-900/75 flex justify-center items-center p-4 z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto text-gray-900">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
-            Edit Property
-          </h2>
+    <dialog id="edit_property_modal" className="modal" open={true}>
+      <div className="modal-box w-11/12 max-w-3xl">
+        <form method="dialog">
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </form>
+        <h3 className="font-bold text-2xl mb-6">Edit Property</h3>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-              {error}
+            <div role="alert" className="alert alert-error text-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{error}</span>
             </div>
           )}
           {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md">
-              {success}
+            <div role="alert" className="alert alert-success text-sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{success}</span>
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Left Column */}
-            <div className="space-y-6">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Name
+            <div className="space-y-4">
+              <div className="form-control">
+                <label className="label" htmlFor="name">
+                  <span className="label-text">Name</span>
                 </label>
                 <input
                   type="text"
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={inputStyles}
+                  className="input input-bordered w-full"
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Description
+              <div className="form-control">
+                <label className="label" htmlFor="description">
+                  <span className="label-text">Description</span>
                 </label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className={`${inputStyles} min-h-[100px]`}
+                  className="textarea textarea-bordered w-full min-h-[100px]"
                   required
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Location
+              <div className="form-control">
+                <label className="label" htmlFor="location">
+                  <span className="label-text">Location</span>
                 </label>
                 <input
                   type="text"
                   id="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className={inputStyles}
+                  className="input input-bordered w-full"
                   required
                 />
               </div>
               <div className="flex gap-4">
-                <div className="flex-1">
-                  <label
-                    htmlFor="pricePerNight"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Price Per Night
+                <div className="form-control flex-1">
+                  <label className="label" htmlFor="pricePerNight">
+                    <span className="label-text">Price Per Night</span>
                   </label>
                   <input
                     type="number"
                     id="pricePerNight"
                     value={pricePerNight}
-                    onChange={(e) =>
-                      setPricePerNight(Number(e.target.value))
-                    }
-                    className={inputStyles}
+                    onChange={(e) => setPricePerNight(Number(e.target.value))}
+                    className="input input-bordered w-full"
                     required
                   />
                 </div>
-                <div className="flex-1">
-                  <label
-                    htmlFor="pricePerExtraGuest"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Price Per Extra Guest
+                <div className="form-control flex-1">
+                  <label className="label" htmlFor="pricePerExtraGuest">
+                    <span className="label-text">Price Per Extra Guest</span>
                   </label>
                   <input
                     type="number"
@@ -197,38 +210,35 @@ const EditPropertyModal = ({
                     onChange={(e) =>
                       setPricePerExtraGuest(Number(e.target.value))
                     }
-                    className={inputStyles}
+                    className="input input-bordered w-full"
                     required
                   />
                 </div>
               </div>
-              <div>
-                <label
-                  htmlFor="imageUrl"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Image URL
+              <div className="form-control">
+                <label className="label" htmlFor="imageUrl">
+                  <span className="label-text">Image URL</span>
                 </label>
                 <input
                   type="text"
                   id="imageUrl"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  className={inputStyles}
+                  className="input input-bordered w-full"
                   required
                 />
               </div>
             </div>
 
             {/* Right Column */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Edit Availability
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Edit Availability</span>
               </label>
-              <p className="text-xs text-gray-500 mb-2">
+              <p className="text-xs text-base-content/70 mb-2">
                 Select the dates when your property is available for booking.
               </p>
-              <div className="border border-gray-300 rounded-md p-2">
+              <div className="border border-base-300 rounded-lg p-2">
                 <DayPicker
                   mode="multiple"
                   min={0}
@@ -237,7 +247,7 @@ const EditPropertyModal = ({
                   numberOfMonths={1}
                   disabled={{ before: new Date() }}
                   classNames={{
-                    day_selected: "bg-blue-600 text-white",
+                    day_selected: "bg-primary text-primary-content",
                     day_today: "font-bold",
                   }}
                   required
@@ -246,24 +256,21 @@ const EditPropertyModal = ({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+          <div className="modal-action mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors font-medium"
+              className="btn"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-            >
+            <button type="submit" className="btn btn-primary">
               Save Changes
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 };
 

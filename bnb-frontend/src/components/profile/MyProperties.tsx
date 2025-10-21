@@ -66,17 +66,17 @@ const MyProperties = ({
   return (
     <section>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">My Properties</h2>
+        <h2 className="text-2xl font-bold">My Properties</h2>
         <button
           onClick={() => setAddProperty((prev) => !prev)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="btn btn-primary btn-sm"
         >
           {addProperty ? "Cancel" : "+ Add Property"}
         </button>
       </div>
 
       {addProperty && (
-        <div className="my-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="my-6 p-6 bg-base-200 rounded-lg">
           <CreatePropertyForm onPropertyCreated={handlePropertyCreated} />
         </div>
       )}
@@ -91,38 +91,31 @@ const MyProperties = ({
       )}
 
       {properties.length > 0 ? (
-        <ul className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {properties.map((property) => (
-            <li
+            <div
               key={property.id}
-              className="bg-white p-5 rounded-lg shadow-md border border-gray-200 flex flex-col"
+              className="card bg-base-100 shadow-xl"
             >
-              <img
-                src={property.imageUrl}
-                alt={property.name}
-                className="w-full h-48 object-cover rounded-md mb-4"
-              />
-              <div className="flex-grow">
-                <h3 className="text-xl font-bold text-gray-900">
-                  {property.name}
-                </h3>
-                <p className="text-gray-600 mb-3">{property.location}</p>
-                <p className="text-gray-700 text-sm mb-4 flex-grow">
-                  {property.description}
-                </p>
+              <figure>
+                <img
+                  src={property.imageUrl}
+                  alt={property.name}
+                  className="w-full h-48 object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h3 className="card-title">{property.name}</h3>
+                <p>{property.location}</p>
+                <p className="text-sm flex-grow">{property.description}</p>
 
-                <div className="space-y-3 text-sm">
+                <div className="space-y-3 text-sm mt-4">
                   <div>
-                    <h4 className="font-semibold text-gray-700 mb-2">
-                      Availability
-                    </h4>
+                    <h4 className="font-semibold mb-2">Availability</h4>
                     <div className="flex flex-wrap gap-2">
                       {property.stillAvailableDates?.length > 0 ? (
                         property.stillAvailableDates.map((date) => (
-                          <div
-                            key={date}
-                            className="bg-green-100 text-green-800 font-medium px-2.5 py-1 rounded-full text-xs"
-                          >
+                          <div key={date} className="badge badge-success badge-outline">
                             {new Date(date).toLocaleDateString(undefined, {
                               month: "short",
                               day: "numeric",
@@ -131,22 +124,17 @@ const MyProperties = ({
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs">
                           No remaining availability.
                         </p>
                       )}
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-700 mb-2">
-                      Booked Dates
-                    </h4>
+                    <h4 className="font-semibold mb-2">Booked Dates</h4>
                     <div className="flex flex-wrap gap-2">
                       {property.bookedDates?.map((date) => (
-                        <div
-                          key={date}
-                          className="bg-gray-200 text-gray-600 font-medium px-2.5 py-1 rounded-full text-xs"
-                        >
+                        <div key={date} className="badge badge-neutral badge-outline">
                           {new Date(date).toLocaleDateString(undefined, {
                             month: "short",
                             day: "numeric",
@@ -157,50 +145,44 @@ const MyProperties = ({
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="border-t border-gray-200 mt-4 pt-4">
-                <div className="flex justify-between items-center mb-2 text-sm">
-                  <span className="font-medium text-gray-700">
-                    Price per night:
-                  </span>
-                  <span className="font-semibold text-lg text-gray-800">
-                    ${property.pricePerNight}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium text-gray-700">
-                    Price per extra guest:
-                  </span>
-                  <span className="font-semibold text-lg text-gray-800">
-                    ${property.pricePerExtraGuest}
-                  </span>
-                </div>
-              </div>
+                <div className="divider"></div>
 
-              <div className="mt-5 flex justify-end space-x-2">
-                <button
-                  onClick={() => setEditingProperty(property)}
-                  className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors font-medium text-sm"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteProperty(property.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-medium text-sm"
-                >
-                  Delete
-                </button>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>Price per night:</span>
+                    <span className="font-semibold">${property.pricePerNight}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Price per extra guest:</span>
+                    <span className="font-semibold">${property.pricePerExtraGuest}</span>
+                  </div>
+                </div>
+
+                <div className="card-actions justify-end mt-4">
+                  <button
+                    onClick={() => setEditingProperty(property)}
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProperty(property.id)}
+                    className="btn btn-error btn-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <div className="text-center py-16 px-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-700">
+        <div className="text-center py-16 px-8 bg-base-200 rounded-lg">
+          <h3 className="text-lg font-semibold">
             No properties found
           </h3>
-          <p className="text-gray-500 mt-1">
+          <p className="mt-1">
             Click the button above to add your first property.
           </p>
         </div>

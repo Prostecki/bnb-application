@@ -80,61 +80,63 @@ const ProfilePage = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 text-gray-700 text-2xl">
-        Loading...
+      <div className="flex items-center justify-center h-screen bg-base-200">
+        <span className="loading loading-lg"></span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 text-red-600 text-2xl">
-        Error: {error}
+      <div className="flex items-center justify-center h-screen bg-base-200">
+        <div role="alert" className="alert alert-error max-w-lg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Error: {error}</span>
+        </div>
       </div>
     );
   }
 
-  // Tab button styles
-  const tabStyle =
-    "whitespace-nowrap py-4 px-4 border-b-2 font-medium text-lg transition-colors duration-200 ease-in-out focus:outline-none";
-  const activeTabStyle = "border-blue-600 text-blue-700";
-  const inactiveTabStyle =
-    "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
-
   return (
-    <div className="bg-gray-100 text-gray-900 min-h-screen p-8">
-      <div className="container mx-auto p-8 bg-white rounded-lg shadow-md border border-gray-200">
+    <div className="bg-base-200 min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="container mx-auto p-4 sm:p-6 lg:p-8 bg-base-100 rounded-2xl shadow-xl">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">
+          <h1 className="text-4xl font-bold">
             Welcome back, {user?.name || user?.email || "User"}
           </h1>
-          <p className="text-lg text-gray-600">
+          <div className={`badge ${user?.isAdmin ? 'badge-secondary' : 'badge-neutral'}`}>
             {user?.isAdmin ? "Administrator" : "User"}
-          </p>
+          </div>
         </div>
 
         {/* Tabs Navigation */}
-        <div className="mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-              <button
-                onClick={() => setActiveTab("properties")}
-                className={`${tabStyle} ${
-                  activeTab === "properties" ? activeTabStyle : inactiveTabStyle
-                }`}
-              >
-                My Properties
-              </button>
-              <button
-                onClick={() => setActiveTab("bookings")}
-                className={`${tabStyle} ${
-                  activeTab === "bookings" ? activeTabStyle : inactiveTabStyle
-                }`}
-              >
-                My Bookings
-              </button>
-            </nav>
-          </div>
+        <div role="tablist" className="tabs tabs-bordered tabs-lg">
+          <a
+            role="tab"
+            className={`tab ${activeTab === 'properties' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab("properties")}
+          >
+            My Properties
+          </a>
+          <a
+            role="tab"
+            className={`tab ${activeTab === 'bookings' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab("bookings")}
+          >
+            My Bookings
+          </a>
         </div>
 
         {/* Tab Content */}

@@ -55,7 +55,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">My Bookings</h2>
+      <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
 
       {editingBooking && (
         <EditBookingModal
@@ -67,56 +67,56 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
       )}
 
       {bookings.length > 0 ? (
-        <ul className="space-y-6">
+        <div className="space-y-6">
           {bookings.map((booking) => (
-            <li
+            <div
               key={booking.id}
-              className="bg-white p-5 rounded-lg shadow-md border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center"
+              className="card lg:card-side bg-base-100 shadow-xl"
             >
-              <img
-                src={booking.properties?.image_url}
-                alt={booking.properties?.name}
-                className="w-full sm:w-32 h-32 object-cover rounded-md mb-4 sm:mb-0 sm:mr-6"
-              />
-              <div className="flex-grow">
-                <h3 className="text-xl font-bold text-gray-900">
-                  {booking.properties?.name}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  <span className="font-semibold">From:</span>{" "}
-                  {new Date(booking.checkInDate).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">To:</span>{" "}
-                  {new Date(booking.checkOutDate).toLocaleDateString()}
-                </p>
-                <p className="mt-3 font-semibold text-gray-800">
+              <figure className="w-full lg:w-48 h-48 lg:h-auto flex-shrink-0">
+                <img
+                  src={booking.properties?.image_url}
+                  alt={booking.properties?.name}
+                  className="w-full h-full object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h3 className="card-title">{booking.properties?.name}</h3>
+                <div className="text-sm">
+                  <p>
+                    <span className="font-semibold">From:</span>{" "}
+                    {new Date(booking.checkInDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className="font-semibold">To:</span>{" "}
+                    {new Date(booking.checkOutDate).toLocaleDateString()}
+                  </p>
+                </div>
+                <p className="mt-2 font-semibold text-lg">
                   Total Price: ${booking.totalPrice}
                 </p>
+                <div className="card-actions justify-end">
+                  <button
+                    onClick={() => setEditingBooking(booking)}
+                    className="btn btn-secondary btn-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleCancelBooking(booking.id)}
+                    className="btn btn-error btn-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 self-stretch sm:self-auto">
-                <button
-                  onClick={() => setEditingBooking(booking)}
-                  className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors font-medium text-sm text-center"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleCancelBooking(booking.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-medium text-sm text-center"
-                >
-                  Cancel
-                </button>
-              </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <div className="text-center py-16 px-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-700">
-            No bookings found
-          </h3>
-          <p className="text-gray-500 mt-1">
+        <div className="text-center py-16 px-8 bg-base-200 rounded-lg">
+          <h3 className="text-lg font-semibold">No bookings found</h3>
+          <p className="mt-1">
             You haven't made any bookings yet.
           </p>
         </div>
