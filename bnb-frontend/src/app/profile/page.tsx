@@ -26,6 +26,7 @@ const ProfilePage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("properties"); // New state for tabs
   const router = useRouter();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
 
@@ -78,33 +79,83 @@ const ProfilePage = () => {
   }, [fetchUserData]);
 
   if (authLoading || loading) {
-    return <div className="container mx-auto p-4">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 text-gray-700 text-2xl">
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 text-red-600 text-2xl">
+        Error: {error}
+      </div>
+    );
   }
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          Welcome, {user?.name || user?.email || "User"}!
-        </h1>
-        <p className="text-2xl text-gray-600/80 underline italic">
-          {user?.isAdmin ? "Admin permissions" : "User permissions"}
-        </p>
-      </div>
+  // Tab button styles
+  const tabStyle =
+    "whitespace-nowrap py-4 px-4 border-b-2 font-medium text-lg transition-colors duration-200 ease-in-out focus:outline-none";
+  const activeTabStyle = "border-blue-600 text-blue-700";
+  const inactiveTabStyle =
+    "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-        <MyProperties
-          initialProperties={properties}
-          onDataChange={fetchUserData}
-        />
-        <MyBookings initialBookings={bookings} onDataChange={fetchUserData} />
+  return (
+    <div className="bg-gray-100 text-gray-900 min-h-screen p-8">
+      <div className="container mx-auto p-8 bg-white rounded-lg shadow-md border border-gray-200">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800">
+            Welcome back, {user?.name || user?.email || "User"}
+          </h1>
+          <p className="text-lg text-gray-600">
+            {user?.isAdmin ? "Administrator" : "User"}
+          </p>
+        </div>
+
+        {/* Tabs Navigation */}
+        <div className="mb-8">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+              <button
+                onClick={() => setActiveTab("properties")}
+                className={`${tabStyle} ${
+                  activeTab === "properties" ? activeTabStyle : inactiveTabStyle
+                }`}
+              >
+                My Properties
+              </button>
+              <button
+                onClick={() => setActiveTab("bookings")}
+                className={`${tabStyle} ${
+                  activeTab === "bookings" ? activeTabStyle : inactiveTabStyle
+                }`}
+              >
+                My Bookings
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-8">
+          {activeTab === "properties" && (
+            <MyProperties
+              initialProperties={properties}
+              onDataChange={fetchUserData}
+            />
+          )}
+          {activeTab === "bookings" && (
+            <MyBookings
+              initialBookings={bookings}
+              onDataChange={fetchUserData}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
+
 };
 
 export default ProfilePage;

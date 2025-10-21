@@ -55,7 +55,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
 
   return (
     <section>
-      <h2 className="text-2xl font-semibold mb-4">My Bookings</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">My Bookings</h2>
 
       {editingBooking && (
         <EditBookingModal
@@ -67,49 +67,59 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
       )}
 
       {bookings.length > 0 ? (
-        <ul className="space-y-4">
+        <ul className="space-y-6">
           {bookings.map((booking) => (
             <li
               key={booking.id}
-              className="border p-4 rounded-lg shadow flex items-center"
+              className="bg-white p-5 rounded-lg shadow-md border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center"
             >
               <img
-                src={booking.properties?.image_url}
+                src={booking.properties?.imageUrl}
                 alt={booking.properties?.name}
-                className="w-24 h-24 object-cover rounded-md mr-4"
+                className="w-full sm:w-32 h-32 object-cover rounded-md mb-4 sm:mb-0 sm:mr-6"
               />
-              <div>
-                <h3 className="text-xl font-bold">
+              <div className="flex-grow">
+                <h3 className="text-xl font-bold text-gray-900">
                   {booking.properties?.name}
                 </h3>
-                <p className="text-sm text-gray-500">
-                  {new Date(booking.checkInDate).toLocaleDateString()} -{" "}
+                <p className="text-sm text-gray-600 mt-1">
+                  <span className="font-semibold">From:</span>{" "}
+                  {new Date(booking.checkInDate).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">To:</span>{" "}
                   {new Date(booking.checkOutDate).toLocaleDateString()}
                 </p>
-                <p className="mt-2 font-semibold">
+                <p className="mt-3 font-semibold text-gray-800">
                   Total Price: ${booking.totalPrice}
                 </p>
-                <p>Guest Full Name: {booking?.guestFullName}</p>
-                <div className="mt-4 flex space-x-2">
-                  <button
-                    onClick={() => setEditingBooking(booking)}
-                    className="btn btn-sm btn-info btn-outline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleCancelBooking(booking.id)}
-                    className="btn btn-sm btn-error btn-outline"
-                  >
-                    Cancel Booking
-                  </button>
-                </div>
+              </div>
+              <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 self-stretch sm:self-auto">
+                <button
+                  onClick={() => setEditingBooking(booking)}
+                  className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors font-medium text-sm text-center"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleCancelBooking(booking.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors font-medium text-sm text-center"
+                >
+                  Cancel
+                </button>
               </div>
             </li>
           ))}
         </ul>
       ) : (
-        <p>You don't have any bookings yet!</p>
+        <div className="text-center py-16 px-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-700">
+            No bookings found
+          </h3>
+          <p className="text-gray-500 mt-1">
+            You haven't made any bookings yet.
+          </p>
+        </div>
       )}
     </section>
   );
