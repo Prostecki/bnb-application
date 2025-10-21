@@ -74,7 +74,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
               className="bg-white p-5 rounded-lg shadow-md border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center"
             >
               <img
-                src={booking.properties?.imageUrl}
+                src={booking.properties?.image_url}
                 alt={booking.properties?.name}
                 className="w-full sm:w-32 h-32 object-cover rounded-md mb-4 sm:mb-0 sm:mr-6"
               />
