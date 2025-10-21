@@ -8,7 +8,6 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 
 const AppContent = ({ children }: { children: React.ReactNode }) => {
   const { loading } = useAuth();
-  const pathname = usePathname();
 
   if (loading) {
     return (

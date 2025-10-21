@@ -56,7 +56,6 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
   return (
     <section>
       <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
-
       {editingBooking && (
         <EditBookingModal
           booking={editingBooking}
@@ -65,7 +64,6 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
           onBookingUpdated={handleBookingUpdated}
         />
       )}
-
       {bookings.length > 0 ? (
         <div className="space-y-6">
           {bookings.map((booking) => (
@@ -116,9 +114,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
       ) : (
         <div className="text-center py-16 px-8 bg-base-200 rounded-lg">
           <h3 className="text-lg font-semibold">No bookings found</h3>
-          <p className="mt-1">
-            You haven't made any bookings yet.
-          </p>
+          <p className="mt-1">You haven't made any bookings yet.</p>
         </div>
       )}
     </section>

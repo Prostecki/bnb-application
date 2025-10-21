@@ -31,6 +31,8 @@ module.exports = {
           "error": "#EF4444",          // red-500
         },
       },
+      "light",
+      "dark",
     ],
   },
 };

@@ -91,12 +91,9 @@ const MyProperties = ({
       )}
 
       {properties.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
-            <div
-              key={property.id}
-              className="card bg-base-100 shadow-xl"
-            >
+            <div key={property.id} className="card bg-base-100 shadow-xl">
               <figure>
                 <img
                   src={property.imageUrl}
@@ -115,7 +112,10 @@ const MyProperties = ({
                     <div className="flex flex-wrap gap-2">
                       {property.stillAvailableDates?.length > 0 ? (
                         property.stillAvailableDates.map((date) => (
-                          <div key={date} className="badge badge-success badge-outline">
+                          <div
+                            key={date}
+                            className="badge badge-soft badge-success badge-outline"
+                          >
                             {new Date(date).toLocaleDateString(undefined, {
                               month: "short",
                               day: "numeric",
@@ -124,9 +124,7 @@ const MyProperties = ({
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs">
-                          No remaining availability.
-                        </p>
+                        <p className="text-xs">No remaining availability.</p>
                       )}
                     </div>
                   </div>
@@ -134,7 +132,10 @@ const MyProperties = ({
                     <h4 className="font-semibold mb-2">Booked Dates</h4>
                     <div className="flex flex-wrap gap-2">
                       {property.bookedDates?.map((date) => (
-                        <div key={date} className="badge badge-neutral badge-outline">
+                        <div
+                          key={date}
+                          className="badge badge-soft badge-info badge-outline"
+                        >
                           {new Date(date).toLocaleDateString(undefined, {
                             month: "short",
                             day: "numeric",
@@ -151,11 +152,15 @@ const MyProperties = ({
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Price per night:</span>
-                    <span className="font-semibold">${property.pricePerNight}</span>
+                    <span className="font-semibold">
+                      ${property.pricePerNight}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Price per extra guest:</span>
-                    <span className="font-semibold">${property.pricePerExtraGuest}</span>
+                    <span className="font-semibold">
+                      ${property.pricePerExtraGuest}
+                    </span>
                   </div>
                 </div>
 
@@ -179,9 +184,7 @@ const MyProperties = ({
         </div>
       ) : (
         <div className="text-center py-16 px-8 bg-base-200 rounded-lg">
-          <h3 className="text-lg font-semibold">
-            No properties found
-          </h3>
+          <h3 className="text-lg font-semibold">No properties found</h3>
           <p className="mt-1">
             Click the button above to add your first property.
           </p>

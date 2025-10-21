@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import type { User } from "../models/user.model";
@@ -24,57 +25,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check token when application loads
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          // Check token validity and get user data
-          try {
-            const response = await fetch("http://localhost:3000/api/auth/me", {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-            });
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await fetch("http://localhost:3000/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
 
-            if (response.ok) {
-              const userData = await response.json();
-              setUser(userData);
-              setIsAuthenticated(true);
-            } else {
-              // Token is invalid
-              localStorage.removeItem("token");
-              setIsAuthenticated(false);
-              setUser(null);
-            }
-          } catch (apiError) {
-            console.error("Error verifying token:", apiError);
-            // If the API is unavailable, the token cannot be verified, so log out.
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData);
+            setIsAuthenticated(true);
+          } else {
             localStorage.removeItem("token");
             setIsAuthenticated(false);
             setUser(null);
           }
+        } catch (apiError) {
+          console.error("Error verifying token:", apiError);
+          localStorage.removeItem("token");
+          setIsAuthenticated(false);
+          setUser(null);
         }
-      } catch (error) {
-        console.error("Error checking auth status:", error);
-        localStorage.removeItem("token");
-        setIsAuthenticated(false);
-        setUser(null);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    checkAuthStatus();
-  }, []);
-
-  const login = (userData?: User) => {
-    setIsAuthenticated(true);
-    if (userData) {
-      setUser(userData);
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+      localStorage.removeItem("token");
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
+  }, [setIsAuthenticated, setUser, setLoading]);
+
+  // Check token when application loads
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
+  const login = async (userData?: User) => {
+    setIsAuthenticated(true);
+    // After login, re-check auth status to fetch the full user profile from the backend
+    // This ensures the user object in context has the latest permissions (e.g., isAdmin)
+    await checkAuthStatus();
   };
 
   const logout = async () => {
