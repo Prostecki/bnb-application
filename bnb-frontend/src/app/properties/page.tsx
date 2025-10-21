@@ -3,15 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Import useAuth
-
-interface Property {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  location: string;
-  pricePerNight: number;
-}
+import { Property } from "@/models/property.model";
 
 const PropertiesPage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -26,15 +18,17 @@ const PropertiesPage = () => {
 
       try {
         const res = await fetch("http://localhost:3000/api/properties");
-
         if (!res.ok) {
           throw new Error("Failed to fetch properties.");
         }
-
         const data = await res.json();
         setProperties(data || []);
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching properties.");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An error occurred while fetching properties.");
+        }
       } finally {
         setLoading(false);
       }
@@ -44,7 +38,8 @@ const PropertiesPage = () => {
   }, []);
 
   const handleDeleteProperty = async (propertyId: string) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    if (!window.confirm("Are you sure you want to delete this property?"))
+      return;
 
     try {
       const token = localStorage.getItem("token");
@@ -73,8 +68,12 @@ const PropertiesPage = () => {
         prevProperties.filter((property) => property.id !== propertyId)
       );
       alert("Property deleted successfully!");
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert(`Error: ${err.message}`);
+      } else {
+        alert("An unknown error occurred.");
+      }
     }
   };
 
@@ -92,7 +91,10 @@ const PropertiesPage = () => {
       {properties.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <div key={property.id} className="card card-compact w-full bg-base-100 shadow-xl">
+            <div
+              key={property.id}
+              className="card card-compact w-full bg-base-100 shadow-xl"
+            >
               <figure>
                 <img
                   src={property.imageUrl}
@@ -101,8 +103,13 @@ const PropertiesPage = () => {
                 />
               </figure>
               <div className="card-body">
+                <div className="absolute top-4 right-0 bg-red-500/90 px-2 py-1 text-white rounded-l-md">
+                  <span className="font-bold">$ {property.pricePerNight}</span>{" "}
+                  / per night
+                </div>
                 <h2 className="card-title">{property.name}</h2>
                 <p className="truncate">{property.description}</p>
+
                 <div className="card-actions justify-between items-center mt-2">
                   <Link
                     href={`/properties/${property.id}`}

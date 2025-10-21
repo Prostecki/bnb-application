@@ -20,6 +20,9 @@ export const Navigation = () => {
     <nav>
       <ul className="flex gap-4">
         <li>
+          <Link href="/home">Home</Link>
+        </li>
+        <li>
           <Link href="/properties">Properties</Link>
         </li>
         {isAuthenticated ? (

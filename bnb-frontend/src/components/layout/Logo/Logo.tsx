@@ -1,9 +1,9 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export const Logo = () => {
   return (
-    <Link href="/">
-      <div className="text-2xl font-bold">BNB</div>
+    <Link href="/home">
+      <div className="text-2xl text-blue-700 font-bold">BNB</div>
     </Link>
   );
 };

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"; // Adding useEffect
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext"; // Import useAuth
 
-const LoginPage = () => {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -94,6 +94,4 @@ const LoginPage = () => {
       </form>
     </div>
   );
-};
-
-export default LoginPage;
+}
