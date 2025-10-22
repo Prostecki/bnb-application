@@ -6,6 +6,7 @@ import {
   resetPasswordController,
   signOutController,
   getMeController,
+  updateProfileController,
 } from "./auth.controller.js";
 
 const authRouter = new Hono();
@@ -16,5 +17,6 @@ authRouter.post("/forgot-password", forgotPasswordController);
 authRouter.post("/reset-password", resetPasswordController);
 authRouter.post("/signout", signOutController);
 authRouter.get("/me", getMeController);
+authRouter.put("/profile", updateProfileController);
 
 export default authRouter;

@@ -109,25 +109,25 @@ export default function PropertyPage() {
         </div>
 
         {/* Image */}
-        <div className="mb-8">
+        <div className="mb-8 grid grid-cols-8 gap-4">
           <img
             src={property.imageUrl}
             alt={property.name}
-            className="w-full h-[500px] object-cover rounded-2xl shadow-2xl mb-4"
+            className="col-span-4 row-span-2 w-full h-full object-cover rounded-2xl shadow-xl"
           />
+
           {property.additionalImages &&
-            property.additionalImages.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {property.additionalImages.map((img, index) => (
-                  <img
-                    className="w-full h-48 object-cover rounded-lg shadow-md"
-                    key={index}
-                    src={img}
-                    alt={`${property.name} additional image ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
+            property.additionalImages.length > 0 &&
+            property.additionalImages
+              .slice(0, 4)
+              .map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`${property.name} additional image ${index + 1}`}
+                  className="col-span-2 h-full w-full object-cover rounded-xl shadow-md"
+                />
+              ))}
         </div>
 
         {/* Main Content */}
@@ -140,11 +140,36 @@ export default function PropertyPage() {
                 {property.description}
               </p>
             </div>
+            <h3 className="mb-5">Meet your host</h3>
             {property.user && (
-              <div>
-                <h3 className="text-xl font-semibold">
-                  Hosted by {toUpperCaseName(property.user.name)}
-                </h3>
+              <div className="flex justify-start gap-4">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="avatar avatar-placeholder">
+                    <div className="bg-neutral text-neutral-content w-24 rounded-full">
+                      <span className="text-3xl">
+                        {toUpperCaseName(property.user.name[0])}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-3xl text-center font-[700]">
+                    {toUpperCaseName(property.user.name)}
+                  </p>
+                  <p className="text-center">Host</p>
+                </div>
+                <div className="ml-10 w-full flex flex-col justify-center gap-4">
+                  <div className="flex gap-4">
+                    <img
+                      className="w-10 object-contain"
+                      src="/description-icon.png"
+                      alt=""
+                    />
+                    <p className="">{property.user.description}</p>
+                  </div>
+                  <div className="flex gap-4 items-center">
+                    <img className="w-10" src="/location-icon.png" alt="" />
+                    <p>{property.user.location}</p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

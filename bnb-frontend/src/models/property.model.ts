@@ -9,6 +9,8 @@ export interface Property {
   userId: string;
   user: {
     name: string;
+    description: string;
+    location: string;
   };
   availability: string[];
   stillAvailableDates: string[];

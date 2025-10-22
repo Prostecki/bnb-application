@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import MyProperties from "@/components/profile/MyProperties";
 import MyBookings from "@/components/profile/MyBookings";
+import UserSettings from "@/components/profile/UserSettings";
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
 
@@ -137,6 +138,13 @@ const ProfilePage = () => {
           >
             My Bookings
           </a>
+          <a
+            role="tab"
+            className={`tab ${activeTab === 'settings' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab("settings")}
+          >
+            Settings
+          </a>
         </div>
 
         {/* Tab Content */}
@@ -150,6 +158,12 @@ const ProfilePage = () => {
           {activeTab === "bookings" && (
             <MyBookings
               initialBookings={bookings}
+              onDataChange={fetchUserData}
+            />
+          )}
+          {activeTab === "settings" && (
+            <UserSettings
+              user={user}
               onDataChange={fetchUserData}
             />
           )}

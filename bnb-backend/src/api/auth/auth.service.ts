@@ -124,7 +124,7 @@ export const getCurrentUser = async (accessToken: string) => {
     // Get additional user information from users table
     const { data: userData, error: userError } = await supabase
       .from("users")
-      .select("id, name, email, is_admin")
+      .select("id, name, email, is_admin, description, location")
       .eq("id", authUser.user.id)
       .single();
 
@@ -136,6 +136,8 @@ export const getCurrentUser = async (accessToken: string) => {
         email: authUser.user.email,
         name: authUser.user.user_metadata?.name || "User",
         is_admin: false,
+        description: "",
+        location: "",
       };
     }
 
@@ -143,4 +145,21 @@ export const getCurrentUser = async (accessToken: string) => {
   } catch (error: any) {
     throw new Error(`Failed to get current user: ${error.message}`);
   }
+};
+
+export const updateProfileService = async (
+  userId: string,
+  description: string,
+  location: string
+) => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ description, location })
+    .eq("id", userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 };
