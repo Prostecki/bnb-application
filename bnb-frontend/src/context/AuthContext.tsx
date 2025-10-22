@@ -8,15 +8,8 @@ import {
   useCallback,
   ReactNode,
 } from "react";
-import type { User } from "../models/user.model";
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
-  login: (userData?: User) => void;
-  logout: () => void;
-  loading: boolean;
-}
+import type { AuthContextType } from "@/types/authContext.types";
+import type { User } from "@/models/user.model";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

@@ -73,23 +73,26 @@ export const signInUser = async (
         .eq("id", data.user.id)
         .single();
 
-      if (!userError && userData) {
-        // Add user information to response
-        return {
-          ...data,
-          user: {
-            ...data.user,
-            name: userData.name,
-            is_admin: userData.is_admin,
-          },
-        };
+      if (userError || !userData) {
+        throw new Error("User profile not found in the database.");
       }
-    } catch (userErr) {
-      console.error("Error fetching user profile:", userErr);
-    }
-  }
 
-  return data;
+      // Add user information to response
+      return {
+        ...data,
+        user: {
+          ...data.user,
+          name: userData.name,
+          is_admin: userData.is_admin,
+        },
+      };
+    } catch (userErr: any) {
+      console.error("Error fetching user profile:", userErr);
+      throw new Error(`Failed to retrieve user profile: ${userErr.message}`);
+    }
+  } else {
+    throw new Error("Supabase authentication successful, but no user data returned.");
+  }
 };
 
 export const forgotPasswordService = async (email: string) => {

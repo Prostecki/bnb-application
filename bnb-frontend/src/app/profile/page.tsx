@@ -8,9 +8,10 @@ import MyBookings from "@/components/profile/MyBookings";
 import UserSettings from "@/components/profile/UserSettings";
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
+import type { BookingSnakeCase } from "@/types/booking.types";
 
 // Helper to map incoming snake_case data to camelCase
-const mapBookingToCamelCase = (booking: any): Booking => ({
+const mapBookingToCamelCase = (booking: BookingSnakeCase): Booking => ({
   id: booking.id,
   checkInDate: booking.check_in_date,
   checkOutDate: booking.check_out_date,
@@ -117,7 +118,11 @@ const ProfilePage = () => {
           <h1 className="text-4xl font-bold">
             Welcome back, {user?.name || user?.email || "User"}
           </h1>
-          <div className={`badge ${user?.isAdmin ? 'badge-secondary' : 'badge-neutral'}`}>
+          <div
+            className={`badge ${
+              user?.isAdmin ? "badge-secondary" : "badge-neutral"
+            }`}
+          >
             {user?.isAdmin ? "Administrator" : "User"}
           </div>
         </div>
@@ -126,21 +131,21 @@ const ProfilePage = () => {
         <div role="tablist" className="tabs tabs-bordered tabs-lg">
           <a
             role="tab"
-            className={`tab ${activeTab === 'properties' ? 'tab-active' : ''}`}
+            className={`tab ${activeTab === "properties" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("properties")}
           >
             My Properties
           </a>
           <a
             role="tab"
-            className={`tab ${activeTab === 'bookings' ? 'tab-active' : ''}`}
+            className={`tab ${activeTab === "bookings" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("bookings")}
           >
             My Bookings
           </a>
           <a
             role="tab"
-            className={`tab ${activeTab === 'settings' ? 'tab-active' : ''}`}
+            className={`tab ${activeTab === "settings" ? "tab-active" : ""}`}
             onClick={() => setActiveTab("settings")}
           >
             Settings
@@ -162,16 +167,12 @@ const ProfilePage = () => {
             />
           )}
           {activeTab === "settings" && (
-            <UserSettings
-              user={user}
-              onDataChange={fetchUserData}
-            />
+            <UserSettings user={user} onDataChange={fetchUserData} />
           )}
         </div>
       </div>
     </div>
   );
-
 };
 
 export default ProfilePage;
