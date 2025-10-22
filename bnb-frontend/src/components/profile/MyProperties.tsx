@@ -131,18 +131,22 @@ const MyProperties = ({
                   <div>
                     <h4 className="font-semibold mb-2">Booked Dates</h4>
                     <div className="flex flex-wrap gap-2">
-                      {property.bookedDates?.map((date) => (
-                        <div
-                          key={date}
-                          className="badge badge-soft badge-info badge-outline"
-                        >
-                          {new Date(date).toLocaleDateString(undefined, {
-                            month: "short",
-                            day: "numeric",
-                            timeZone: "UTC",
-                          })}
-                        </div>
-                      ))}
+                      {property.bookedDates?.length > 0 ? (
+                        property.bookedDates?.map((date) => (
+                          <div
+                            key={date}
+                            className="badge badge-soft badge-info badge-outline"
+                          >
+                            {new Date(date).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                              timeZone: "UTC",
+                            })}
+                          </div>
+                        ))
+                      ) : (
+                        <p>Available for booking</p>
+                      )}
                     </div>
                   </div>
                 </div>

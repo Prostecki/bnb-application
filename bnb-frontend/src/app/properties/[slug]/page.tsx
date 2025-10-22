@@ -8,6 +8,7 @@ import { useAuth } from "../../../context/AuthContext";
 import EditPropertyModal from "@/components/properties/EditPropertyModal";
 import BookingSidebar from "@/components/properties/BookingSidebar";
 import { type DateRange } from "react-day-picker";
+import PropertyRatings from "@/components/properties/PropertyRatings";
 
 export default function PropertyPage() {
   const params = useParams();
@@ -177,6 +178,7 @@ export default function PropertyPage() {
           property={property}
         />
       )}
+      <PropertyRatings />
     </div>
   );
 }
