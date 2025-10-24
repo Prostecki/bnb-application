@@ -5,4 +5,6 @@ export interface AuthContextType {
   login: (userData?: User) => void;
   logout: () => void;
   loading: boolean;
+  error: string | null;
+  setError: (error: string | null) => void;
 }
