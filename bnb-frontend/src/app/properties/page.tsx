@@ -1,81 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext"; // Import useAuth
-import { Property } from "@/models/property.model";
-
+import { useProperties } from "@/hooks/useProperties";
+import PropertyPage from "./[slug]/page";
 const PropertiesPage = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const { user } = useAuth(); // Get user from AuthContext
+  const { properties, loading, error, deleteProperty } = useProperties();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const res = await fetch("http://localhost:3000/api/properties");
-        if (!res.ok) {
-          throw new Error("Failed to fetch properties.");
-        }
-        const data = await res.json();
-        setProperties(data || []);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An error occurred while fetching properties.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, []);
-
-  const handleDeleteProperty = async (propertyId: string) => {
-    if (!window.confirm("Are you sure you want to delete this property?"))
+  const handleDelete = async (propertyId: string) => {
+    if (!window.confirm("Are you sure you want to delete this property?")) {
       return;
-
+    }
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Authentication error. Please log in again.");
-        return;
-      }
-
-      const res = await fetch(
-        `http://localhost:3000/api/properties/${propertyId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to delete property.");
-      }
-
-      // Remove property from state to update UI
-      setProperties((prevProperties) =>
-        prevProperties.filter((property) => property.id !== propertyId)
-      );
+      await deleteProperty(propertyId);
       alert("Property deleted successfully!");
     } catch (err: unknown) {
       if (err instanceof Error) {
         alert(`Error: ${err.message}`);
-      } else {
-        alert("An unknown error occurred.");
       }
     }
   };
+  // const [properties, setProperties] = useState<Property[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState("");
+  // const { user } = useAuth(); // Get user from AuthContext
+
+  // useEffect(() => {
+  //   const fetchProperties = async () => {
+  //     setLoading(true);
+  //     setError("");
+
+  //     try {
+  //       const res = await fetch("http://localhost:3000/api/properties");
+  //       if (!res.ok) {
+  //         throw new Error("Failed to fetch properties.");
+  //       }
+  //       const data = await res.json();
+  //       setProperties(data || []);
+  //     } catch (err: unknown) {
+  //       if (err instanceof Error) {
+  //         setError(err.message);
+  //       } else {
+  //         setError("An error occurred while fetching properties.");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchProperties();
+  // }, []);
+
+  // const handleDeleteProperty = async (propertyId: string) => {
+  //   if (!window.confirm("Are you sure you want to delete this property?"))
+  //     return;
+
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       alert("Authentication error. Please log in again.");
+  //       return;
+  //     }
+
+  //     const res = await fetch(
+  //       `http://localhost:3000/api/properties/${propertyId}`,
+  //       {
+  //         method: "DELETE",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (!res.ok) {
+  //       const errorData = await res.json();
+  //       throw new Error(errorData.error || "Failed to delete property.");
+  //     }
+
+  //     // Remove property from state to update UI
+  //     setProperties((prevProperties) =>
+  //       prevProperties.filter((property) => property.id !== propertyId)
+  //     );
+  //     alert("Property deleted successfully!");
+  //   } catch (err: unknown) {
+  //     if (err instanceof Error) {
+  //       alert(`Error: ${err.message}`);
+  //     } else {
+  //       alert("An unknown error occurred.");
+  //     }
+  //   }
+  // };
 
   if (loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
@@ -121,7 +136,7 @@ const PropertiesPage = () => {
                     <button
                       onClick={(e) => {
                         e.preventDefault(); // Prevent navigation from parent Link/div
-                        handleDeleteProperty(property.id);
+                        handleDelete(property.id);
                       }}
                       className="btn btn-error btn-sm"
                     >
