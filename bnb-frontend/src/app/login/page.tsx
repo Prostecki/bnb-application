@@ -15,8 +15,14 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
-  const handleSubmit = async () => {
-    login();
+  const handleSubmit = async (email: string, password: string) => {
+    try {
+      await login(email, password);
+      // Redirect will happen automatically via useEffect when isAuthenticated becomes true
+    } catch (err) {
+      // Error is already set in the context by the login function
+      console.error("Login failed:", err);
+    }
   };
 
   return (

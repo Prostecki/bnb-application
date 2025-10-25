@@ -12,7 +12,7 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, setAuthFromToken } = useAuth();
 
   // If user is already logged in, redirect them
   useEffect(() => {
@@ -39,7 +39,7 @@ const RegisterPage = () => {
         const data = await res.json();
         if (data.session && data.session.access_token) {
           localStorage.setItem("token", data.session.access_token);
-          login(data.user); // Pass user data to context
+          await setAuthFromToken(); // Update auth state with the token
           router.push("/profile");
         } else {
           setError(

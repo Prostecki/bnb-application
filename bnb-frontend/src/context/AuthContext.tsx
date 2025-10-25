@@ -62,10 +62,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  const login = async (userData?: User) => {
+  const login = async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Call the signin API
+      const response = await fetch("http://localhost:3000/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to sign in");
+      }
+
+      // Store the token in localStorage
+      if (data.session?.access_token) {
+        localStorage.setItem("token", data.session.access_token);
+
+        // Update auth state and fetch user profile
+        setIsAuthenticated(true);
+        await checkAuthStatus();
+      } else {
+        throw new Error("No access token received from server");
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred during login";
+      setError(errorMessage);
+      setIsAuthenticated(false);
+      setUser(null);
+      throw err; // Re-throw so the component can handle it if needed
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function for when token is already stored (e.g., after registration)
+  const setAuthFromToken = async () => {
     setIsAuthenticated(true);
-    // After login, re-check auth status to fetch the full user profile from the backend
-    // This ensures the user object in context has the latest permissions (e.g., isAdmin)
     await checkAuthStatus();
   };
 
@@ -97,7 +138,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, loading, error, setError }}
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        loading,
+        error,
+        setError,
+        setAuthFromToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
