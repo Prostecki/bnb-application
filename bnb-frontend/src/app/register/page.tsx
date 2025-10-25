@@ -12,7 +12,7 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, setAuthFromToken } = useAuth();
+  const { isAuthenticated, register } = useAuth();
 
   // If user is already logged in, redirect them
   useEffect(() => {
@@ -27,31 +27,14 @@ const RegisterPage = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.session && data.session.access_token) {
-          localStorage.setItem("token", data.session.access_token);
-          await setAuthFromToken(); // Update auth state with the token
-          router.push("/profile");
-        } else {
-          setError(
-            "Registration successful, but failed to log in. Please try logging in manually."
-          );
-        }
-      } else {
-        const data = await res.json();
-        setError(data.message || "Registration failed.");
-      }
-    } catch (err) {
-      setError("An unexpected error occurred.");
+      await register(name, email, password);
+      router.push("/profile");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred during registration";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -104,6 +104,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const register = async (name: string, email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Registration failed.");
+      }
+
+      if (data.session?.access_token) {
+        localStorage.setItem("token", data.session.access_token);
+        // Update auth state and fetch user profile
+        await setAuthFromToken();
+      } else {
+        throw new Error(
+          "Registration successful, but failed to log in automatically."
+        );
+      }
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An unexpected error occurred during registration";
+      setError(errorMessage);
+      // Ensure user is not authenticated if registration fails
+      setIsAuthenticated(false);
+      setUser(null);
+      throw err; // Re-throw so the component can handle it
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Helper function for when token is already stored (e.g., after registration)
   const setAuthFromToken = async () => {
     setIsAuthenticated(true);
@@ -142,6 +185,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         user,
         login,
+        register, // Add this line
         logout,
         loading,
         error,

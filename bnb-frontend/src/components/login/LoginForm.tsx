@@ -10,7 +10,12 @@ interface LoginFormProps {
   setError: (error: string | null) => void;
 }
 
-export default function LoginForm({ onSubmit, loading, error, setError }: LoginFormProps) {
+export default function LoginForm({
+  onSubmit,
+  loading,
+  error,
+  setError,
+}: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -68,7 +73,7 @@ export default function LoginForm({ onSubmit, loading, error, setError }: LoginF
           </div>
 
           {error && (
-            <div role="alert" className="alert alert-error text-sm">
+            <div role="alert" className="alert alert-warning text-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6 shrink-0 stroke-current"

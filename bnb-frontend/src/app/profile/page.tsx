@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import MyProperties from "@/components/profile/MyProperties";
 import MyBookings from "@/components/profile/MyBookings";
 import UserSettings from "@/components/profile/UserSettings";
-import ErrorComponent from "@/components/profile/ErrorComponent";
+import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/profile/LoadingComponent";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
