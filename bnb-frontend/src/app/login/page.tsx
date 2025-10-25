@@ -1,135 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Adding useEffect
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth
-import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import LoginForm from "@/components/login/LoginForm";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, login } = useAuth(); // Using useAuth
+  const { login, isAuthenticated, loading, error, setError } = useAuth();
 
-  // If user is already logged in, redirect them
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/profile"); // Or to another page
+      router.push("/profile");
     }
   }, [isAuthenticated, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
+  const handleSubmit = async (email: string, password: string) => {
     try {
-      const res = await fetch("http://localhost:3000/api/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.session && data.session.access_token) {
-          localStorage.setItem("token", data.session.access_token);
-          login(data.user); // Pass user data to context
-          router.push("/profile");
-        } else {
-          setError("Login successful, but no session returned.");
-        }
-      } else {
-        const data = await res.json();
-        setError(
-          data.message || "Login failed. Please check your credentials."
-        );
-      }
+      await login(email, password);
+      // Redirect will happen automatically via useEffect when isAuthenticated becomes true
     } catch (err) {
-      setError("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
+      // Error is already set in the context by the login function
+      console.error("Login failed:", err);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h1 className="card-title text-3xl justify-center">
-            Sign in to your account
-          </h1>
-          <p className="text-center text-sm">
-            Or <Link href="/register" className="link link-primary">
-              create a new account
-            </Link>
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label" htmlFor="email">
-                <span className="label-text">Email address</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-            <div className="form-control">
-              <label className="label" htmlFor="password">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
-
-            {error && (
-              <div role="alert" className="alert alert-error text-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 shrink-0 stroke-current"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{error}</span>
-              </div>
-            )}
-
-            <div className="form-control mt-6">
-              <button
-                type="submit"
-                className="btn btn-primary w-full"
-                disabled={loading}
-              >
-                {loading && <span className="loading loading-spinner"></span>}
-                {loading ? "Signing in..." : "Sign in"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+      <LoginForm
+        onSubmit={handleSubmit}
+        loading={loading}
+        error={error}
+        setError={setError}
+      />
     </div>
   );
 }

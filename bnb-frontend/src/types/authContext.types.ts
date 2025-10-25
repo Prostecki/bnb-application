@@ -2,7 +2,10 @@ import type { User } from "@/models/user.model";
 export interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (userData?: User) => void;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  error: string | null;
+  setError: (error: string | null) => void;
+  setAuthFromToken: () => Promise<void>;
 }
