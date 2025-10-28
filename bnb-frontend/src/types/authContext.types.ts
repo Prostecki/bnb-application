@@ -8,5 +8,4 @@ export interface AuthContextType {
   loading: boolean;
   error: string | null;
   setError: (error: string | null) => void;
-  setAuthFromToken: () => Promise<void>;
 }

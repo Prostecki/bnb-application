@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth
+import { useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { useProperties } from "@/hooks/useProperties";
+
 const PropertiesPage = () => {
-  const { properties, loading, error, deleteProperty } = useProperties();
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams.get("search") || "";
+  const { properties, loading, error, deleteProperty } = useProperties(searchTerm);
   const { user } = useAuth();
 
   const handleDelete = async (propertyId: string) => {
@@ -64,7 +68,7 @@ const PropertiesPage = () => {
                   {user?.isAdmin && (
                     <button
                       onClick={(e) => {
-                        e.preventDefault(); // Prevent navigation from parent Link/div
+                        e.preventDefault();
                         handleDelete(property.id);
                       }}
                       className="btn btn-error btn-sm"
@@ -78,7 +82,11 @@ const PropertiesPage = () => {
           ))}
         </div>
       ) : (
-        <p>No properties available at the moment.</p>
+        <p>
+          {searchTerm
+            ? "No properties found matching your search."
+            : "No properties available at the moment."}
+        </p>
       )}
     </div>
   );

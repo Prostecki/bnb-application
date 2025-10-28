@@ -17,7 +17,7 @@ const ProfilePage = () => {
   useAuthRedirect(isAuthenticated, authLoading);
 
   const { bookings, properties, loading, error, refetch } =
-    useProfileData(isAuthenticated);
+    useProfileData(user);
 
   if (authLoading || loading) {
     return <LoadingComponent />;

@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import type { Property } from "@/models/property.model";
 import type { Booking } from "@/models/booking.model";
 import type { BookingSnakeCase } from "@/types/booking.types";
+import type { User } from "@/models/user.model";
 
 // Helper to map incoming snake_case data to camelCase
 const mapBookingToCamelCase = (booking: BookingSnakeCase): Booking => ({
@@ -27,14 +28,14 @@ const getErrorMessage = (err: unknown): string => {
   }
 };
 
-export const useProfileData = (isAuthenticated: boolean) => {
+export const useProfileData = (user: User | null) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserData = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!user) {
       setLoading(false);
       return;
     }
@@ -70,7 +71,7 @@ export const useProfileData = (isAuthenticated: boolean) => {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
   useEffect(() => {
     fetchUserData();

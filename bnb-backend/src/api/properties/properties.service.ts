@@ -33,10 +33,15 @@ const mapToCamelCase = (property: PropertyFromDb): any => ({
   bookings: property.bookings || [],
 });
 
-export const getProperties = async () => {
-  const { data, error } = await supabase
-    .from("properties")
-    .select("*, availability, user:users(*)");
+export const getProperties = async (search?: string) => {
+  let query = supabase.from("properties").select("*, availability, user:users(*)");
+
+  if (search) {
+    query = query.ilike("location", `%${search}%`);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
     throw new Error(error.message);
   }

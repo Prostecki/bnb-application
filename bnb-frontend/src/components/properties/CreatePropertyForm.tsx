@@ -93,8 +93,12 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
       setAvailability([]);
       // Notify parent component
       onPropertyCreated();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred while creating the property.");
+      }
     }
   };
 

@@ -86,9 +86,13 @@ export const signInUser = async (
           is_admin: userData.is_admin,
         },
       };
-    } catch (userErr: any) {
+    } catch (userErr: unknown) {
       console.error("Error fetching user profile:", userErr);
-      throw new Error(`Failed to retrieve user profile: ${userErr.message}`);
+      if (userErr instanceof Error) {
+        throw new Error(`Failed to retrieve user profile: ${userErr.message}`);
+      } else {
+        throw new Error("An unknown error occurred while fetching the user profile.");
+      }
     }
   } else {
     throw new Error("Supabase authentication successful, but no user data returned.");
@@ -97,7 +101,17 @@ export const signInUser = async (
 
 export const forgotPasswordService = async (email: string) => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: process.env.FRONTEND_URL + "/reset-password",
+    redirectTo: `${process.env.FRONTEND_URL}/reset-password`,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const resetPasswordService = async (password: string) => {
+  const { error } = await supabase.auth.updateUser({
+    password: password,
   });
 
   if (error) {
@@ -145,8 +159,12 @@ export const getCurrentUser = async (accessToken: string) => {
     }
 
     return userData;
-  } catch (error: any) {
-    throw new Error(`Failed to get current user: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+        throw new Error(`Failed to get current user: ${error.message}`);
+    } else {
+        throw new Error("An unknown error occurred while fetching the current user.");
+    }
   }
 };
 

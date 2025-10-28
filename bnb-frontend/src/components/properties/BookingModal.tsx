@@ -92,8 +92,12 @@ export default function BookingModal({
         onClose();
         setSuccess("");
       }, 2000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred while booking the property.");
+      }
     }
   };
 

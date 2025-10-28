@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Property } from "@/models/property.model";
 
-export const useProperties = () => {
+export const useProperties = (searchTerm: string = "") => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +11,8 @@ export const useProperties = () => {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:3000/api/properties");
+      const query = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : "";
+      const res = await fetch(`http://localhost:3000/api/properties${query}`);
       if (!res.ok) {
         throw new Error("Failed to fetch properties.");
       }
@@ -26,7 +27,7 @@ export const useProperties = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchProperties();

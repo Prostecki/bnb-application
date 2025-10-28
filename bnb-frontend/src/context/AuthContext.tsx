@@ -86,9 +86,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.session?.access_token) {
         localStorage.setItem("token", data.session.access_token);
 
-        // Update auth state and fetch user profile
-        setIsAuthenticated(true);
+        // Fetch user profile first, then set authenticated
         await checkAuthStatus();
+        // checkAuthStatus already sets isAuthenticated and user if token is valid
       } else {
         throw new Error("No access token received from server");
       }
@@ -125,8 +125,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data.session?.access_token) {
         localStorage.setItem("token", data.session.access_token);
-        // Update auth state and fetch user profile
-        await setAuthFromToken();
+        // Fetch user profile first, then set authenticated
+        await checkAuthStatus();
+        // checkAuthStatus already sets isAuthenticated and user if token is valid
       } else {
         throw new Error(
           "Registration successful, but failed to log in automatically."
@@ -145,12 +146,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Helper function for when token is already stored (e.g., after registration)
-  const setAuthFromToken = async () => {
-    setIsAuthenticated(true);
-    await checkAuthStatus();
   };
 
   const logout = async () => {
@@ -185,12 +180,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         user,
         login,
-        register, // Add this line
+        register,
         logout,
         loading,
         error,
         setError,
-        setAuthFromToken,
       }}
     >
       {children}

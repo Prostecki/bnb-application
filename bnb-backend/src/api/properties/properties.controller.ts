@@ -4,7 +4,8 @@ import * as bookingService from "../bookings/bookings.service.js";
 import type { Property } from "../../models/property.model.js";
 
 export const getPropertiesController = async (c: Context) => {
-  const data = await propertyService.getProperties();
+  const { search } = c.req.query();
+  const data = await propertyService.getProperties(search);
   return c.json(data);
 };
 
