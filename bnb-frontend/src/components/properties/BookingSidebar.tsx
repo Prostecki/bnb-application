@@ -31,51 +31,42 @@ const BookingSidebar = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <DayPicker
-        mode="range"
-        selected={range}
-        onSelect={setRange}
-        numberOfMonths={1}
-        className="border rounded-lg p-4 justify-self-center"
-        modifiers={{
-          booked: property.bookedDates.map((d) => new Date(d)),
-          disabled: isDateDisabled,
-          available: (date: Date) => !isDateDisabled(date),
-        }}
-        modifiersClassNames={{
-          available: "available-day",
-        }}
-        modifiersStyles={{
-          booked: {
-            backgroundColor: "#fee2e2",
-            color: "#dc2626",
-            textDecoration: "line-through",
-          },
-          available: {
-            backgroundColor: "#dcfce7",
-            color: "#16a34a",
-          },
-          disabled: {
-            backgroundColor: "white",
-            color: "#d1d5db",
-            cursor: "default",
-          },
-        }}
-      />
-      {range?.from && (
-        <button
-          className="btn btn-sm btn-outline"
-          onClick={() => setRange(undefined)}
-        >
-          Clear Dates
-        </button>
-      )}
-      <PropertyDetailCard
-        pricePerNight={property.pricePerNight}
-        onBookNowClick={onBookNowClick}
-        range={range}
-      />
+    <div className="card bg-base-100 shadow-xl">
+      <div className="card-body items-center">
+        <div className="overflow-x-auto">
+          <DayPicker
+            mode="range"
+            selected={range}
+            onSelect={setRange}
+            numberOfMonths={1}
+            modifiers={{
+              booked: property.bookedDates.map((d) => new Date(d)),
+              disabled: isDateDisabled,
+              available: (date: Date) => !isDateDisabled(date),
+            }}
+            modifiersClassNames={{
+              booked: "bg-red-100 text-red-600 line-through",
+              available: "bg-green-100 text-green-700 font-bold",
+              disabled: "text-gray-400",
+              selected: "bg-primary text-primary-content",
+              today: "font-bold",
+            }}
+          />
+        </div>
+        {range?.from && (
+          <button
+            className="btn btn-sm btn-outline mt-4"
+            onClick={() => setRange(undefined)}
+          >
+            Clear Dates
+          </button>
+        )}
+        <PropertyDetailCard
+          pricePerNight={property.pricePerNight}
+          onBookNowClick={onBookNowClick}
+          range={range}
+        />
+      </div>
     </div>
   );
 };

@@ -25,10 +25,16 @@ const EditPropertyModal = ({
   const [pricePerExtraGuest, setPricePerExtraGuest] = useState(
     property.pricePerExtraGuest
   );
+  const [additionalImages, setAdditionalImages] = useState("");
+
   const [imageUrl, setImageUrl] = useState(property.imageUrl);
   const [availability, setAvailability] = useState<Date[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const additionalImagesArray = additionalImages
+    .split("\n")
+    .filter((url) => url.trim() !== "");
 
   useEffect(() => {
     // Pre-populate the calendar with existing availability
@@ -73,6 +79,7 @@ const EditPropertyModal = ({
             pricePerExtraGuest,
             imageUrl,
             availability: availabilityDates,
+            additionalImages: additionalImagesArray,
           }),
         }
       );
@@ -228,6 +235,20 @@ const EditPropertyModal = ({
                   required
                 />
               </div>
+              <div>
+                <label
+                  htmlFor="additionalImages"
+                  className="block text-sm font-medium"
+                >
+                  Additional Images (one URL per line)
+                </label>
+                <textarea
+                  id="additionalImages"
+                  value={additionalImages}
+                  onChange={(e) => setAdditionalImages(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
             </div>
 
             {/* Right Column */}
@@ -257,11 +278,7 @@ const EditPropertyModal = ({
           </div>
 
           <div className="modal-action mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn"
-            >
+            <button type="button" onClick={onClose} className="btn">
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
