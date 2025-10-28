@@ -4,8 +4,8 @@ import { toUpperCaseName } from "@/utils/string";
 interface HostProfileProps {
   host?: {
     name: string;
-    description?: string;
-    location?: string;
+    description: string;
+    location: string;
   };
 }
 
@@ -34,11 +34,13 @@ const HostProfile: React.FC<HostProfileProps> = ({ host }) => {
               src="/description-icon.png"
               alt=""
             />
-            <p className="">{host.description}</p>
+            <p className="">
+              {host.description || "The host did not provide some information"}
+            </p>
           </div>
           <div className="flex gap-4 items-center">
             <img className="w-10" src="/location-icon.png" alt="" />
-            <p>{host.location}</p>
+            <p>{host.location || "The host didn't provide location"}</p>
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ interface Property {
   pricePerExtraGuest: number;
   imageUrl: string;
   availability: string[];
+  additionalImages: string[];
 }
 
 interface CreatePropertyFormProps {
@@ -28,6 +29,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
   const [pricePerNight, setPricePerNight] = useState(0);
   const [pricePerExtraGuest, setPricePerExtraGuest] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
+  const [additionalImages, setAdditionalImages] = useState("");
   const [availability, setAvailability] = useState<Date[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -54,6 +56,10 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
       format(date, "yyyy-MM-dd")
     );
 
+    const additionalImagesArray = additionalImages
+      .split("\n")
+      .filter((url) => url.trim() !== "");
+
     if (availabilityDates.length === 0) {
       setError("Please select at least one availability date.");
       return;
@@ -74,6 +80,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
           pricePerExtraGuest,
           imageUrl,
           availability: availabilityDates,
+          additionalImages: additionalImagesArray,
         }),
       });
 
@@ -90,6 +97,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
       setPricePerNight(0);
       setPricePerExtraGuest(0);
       setImageUrl("");
+      setAdditionalImages("");
       setAvailability([]);
       // Notify parent component
       onPropertyCreated();
@@ -152,6 +160,7 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
         <input
           type="number"
           id="pricePerNight"
+          min={0}
           value={pricePerNight}
           onChange={(e) => setPricePerNight(Number(e.target.value))}
           className="w-full p-2 border rounded"
@@ -185,6 +194,17 @@ const CreatePropertyForm = ({ onPropertyCreated }: CreatePropertyFormProps) => {
           onChange={(e) => setImageUrl(e.target.value)}
           className="w-full p-2 border rounded"
           required
+        />
+      </div>
+      <div>
+        <label htmlFor="additionalImages" className="block text-sm font-medium">
+          Additional Images (one URL per line)
+        </label>
+        <textarea
+          id="additionalImages"
+          value={additionalImages}
+          onChange={(e) => setAdditionalImages(e.target.value)}
+          className="w-full p-2 border rounded"
         />
       </div>
       <div>
