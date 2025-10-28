@@ -25,12 +25,6 @@ export default function PropertyPage() {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>();
 
-  useEffect(() => {
-    if (property) {
-      console.log("Property data:", property);
-    }
-  }, [property]);
-
   const handleBookNowClick = () => {
     setBookingModalOpen(true);
   };
