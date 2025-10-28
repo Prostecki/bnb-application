@@ -16,6 +16,10 @@ const ProfilePage = () => {
 
   useAuthRedirect(isAuthenticated, authLoading);
 
+  const capitalizeName = (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const { bookings, properties, loading, error, refetch } =
     useProfileData(user);
 
@@ -32,7 +36,7 @@ const ProfilePage = () => {
       <div className="container mx-auto p-4 sm:p-6 lg:p-8 bg-base-100 rounded-2xl shadow-xl">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">
-            Welcome back, {user?.name || user?.email || "User"}
+            Welcome back, {capitalizeName(user?.name || user?.email || "User")}
           </h1>
           <div
             className={`badge ${

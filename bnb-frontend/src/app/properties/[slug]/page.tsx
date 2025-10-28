@@ -9,6 +9,11 @@ import EditPropertyModal from "@/components/properties/EditPropertyModal";
 import BookingSidebar from "@/components/properties/BookingSidebar";
 import { type DateRange } from "react-day-picker";
 import PropertyRatings from "@/components/properties/PropertyRatings";
+import PageStatusIndicator from "@/components/common/PageStatusIndicator";
+import PropertyHeader from "@/components/properties/PropertyHeader";
+import PropertyImageGallery from "@/components/properties/PropertyImageGallery";
+import PropertyDetails from "@/components/properties/PropertyDetails";
+import HostProfile from "@/components/properties/HostProfile";
 
 export default function PropertyPage() {
   const params = useParams();
@@ -26,11 +31,6 @@ export default function PropertyPage() {
     }
   }, [property]);
 
-  const toUpperCaseName = (str: string) => {
-    if (!str) return "";
-    return str[0].toUpperCase() + str.slice(1);
-  };
-
   const handleBookNowClick = () => {
     setBookingModalOpen(true);
   };
@@ -39,139 +39,36 @@ export default function PropertyPage() {
     setEditModalOpen(true);
   };
 
-  if (loading) {
+  if (loading || error || !property) {
     return (
-      <div className="flex items-center justify-center h-screen bg-base-200">
-        <span className="loading loading-lg"></span>
-      </div>
+      <PageStatusIndicator
+        loading={loading}
+        error={error}
+        notFound={!property && !loading && !error}
+        notFoundMessage="Property not found."
+      />
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-base-200">
-        <div role="alert" className="alert alert-error max-w-lg">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>Error: {error}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!property) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-base-200">
-        <div role="alert" className="alert alert-warning max-w-lg">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <span>Property not found.</span>
-        </div>
-      </div>
-    );
-  }
-
-  const isOwner = isAuthenticated && user && user.id === property.userId;
+  const isOwner = !!(isAuthenticated && user && user.id === property.userId);
 
   return (
     <div className="bg-base-200 min-h-screen">
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold">{property.name}</h1>
-          {isOwner && (
-            <button onClick={handleEditClick} className="btn btn-secondary">
-              Edit Property
-            </button>
-          )}
-        </div>
+        <PropertyHeader
+          propertyName={property.name}
+          isOwner={isOwner}
+          onEditClick={handleEditClick}
+        />
 
-        {/* Image */}
-        <div className="mb-8 grid grid-cols-8 gap-4">
-          <img
-            src={property.imageUrl}
-            alt={property.name}
-            className="col-span-4 row-span-2 w-full h-full object-cover rounded-2xl shadow-xl"
-          />
-
-          {property.additionalImages &&
-            property.additionalImages.length > 0 &&
-            property.additionalImages
-              .slice(0, 4)
-              .map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`${property.name} additional image ${index + 1}`}
-                  className="col-span-2 h-full w-full object-cover rounded-xl shadow-md"
-                />
-              ))}
-        </div>
+        <PropertyImageGallery property={property} />
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Details */}
           <div className="lg:col-span-2 bg-base-100 p-8 rounded-2xl shadow-xl">
-            <div className="border-b border-base-300 pb-6 mb-6">
-              <h2 className="text-2xl font-bold mb-2">About this property</h2>
-              <p className="text-base-content/80 leading-relaxed">
-                {property.description}
-              </p>
-            </div>
-            <h3 className="mb-5">Meet your host</h3>
-            {property.user && (
-              <div className="flex justify-start gap-4">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="avatar avatar-placeholder">
-                    <div className="bg-neutral text-neutral-content w-24 rounded-full">
-                      <span className="text-3xl">
-                        {toUpperCaseName(property.user.name[0])}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-3xl text-center font-[700]">
-                    {toUpperCaseName(property.user.name)}
-                  </p>
-                  <p className="text-center">Host</p>
-                </div>
-                <div className="ml-10 w-full flex flex-col justify-center gap-4">
-                  <div className="flex gap-4">
-                    <img
-                      className="w-10 object-contain"
-                      src="/description-icon.png"
-                      alt=""
-                    />
-                    <p className="">{property.user.description}</p>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <img className="w-10" src="/location-icon.png" alt="" />
-                    <p>{property.user.location}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+            <PropertyDetails description={property.description} />
+            {property.user && <HostProfile host={property.user} />}
           </div>
 
           {/* Right Column: Booking */}

@@ -34,7 +34,9 @@ const mapToCamelCase = (property: PropertyFromDb): any => ({
 });
 
 export const getProperties = async (search?: string) => {
-  let query = supabase.from("properties").select("*, availability, user:users(*)");
+  let query = supabase
+    .from("properties")
+    .select("*, availability, user:users(*)");
 
   if (search) {
     query = query.ilike("location", `%${search}%`);
