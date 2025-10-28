@@ -59,7 +59,14 @@ export default function LoginForm({
               <label className="label" htmlFor="password">
                 <span className="label-text">Password</span>
               </label>
-              <Link href="/forgot-password" passHref className="label-text-alt link link-hover">
+              <Link
+                onClick={() =>
+                  window.alert("The functionallity is not implemented yet.")
+                }
+                href=""
+                passHref
+                className="label-text-alt link link-hover"
+              >
                 Forgot password?
               </Link>
             </div>
