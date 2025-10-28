@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { DayPicker, type DateRange } from "react-day-picker";
-import { isSameDay, format } from "date-fns";
+import {
+  DayPicker,
+  getDefaultClassNames,
+  type DateRange,
+} from "react-day-picker";
+import { format } from "date-fns";
 import PropertyDetailCard from "./PropertyDetailCard";
 import type { Property } from "@/models/property.model";
 
@@ -12,6 +16,8 @@ interface BookingSidebarProps {
   range: DateRange | undefined;
   setRange: (range: DateRange | undefined) => void;
 }
+
+const defaultClassNames = getDefaultClassNames();
 
 const BookingSidebar = ({
   property,
@@ -39,6 +45,7 @@ const BookingSidebar = ({
             selected={range}
             onSelect={setRange}
             numberOfMonths={1}
+            // showOutsideDays
             modifiers={{
               booked: property.bookedDates.map((d) => new Date(d)),
               disabled: isDateDisabled,
@@ -46,10 +53,18 @@ const BookingSidebar = ({
             }}
             modifiersClassNames={{
               booked: "bg-red-100 text-red-600 line-through",
-              available: "bg-green-100 text-green-700 font-bold",
-              disabled: "text-gray-400",
-              selected: "bg-primary text-primary-content",
-              today: "font-bold",
+              available: "bg-green-500 text-white rounded-full",
+              disabled: "text-gray-500/80 cursor-not-allowed",
+            }}
+            classNames={{
+              selected: "!bg-blue-900 text-white",
+              range_start: "!bg-blue-600 text-white rounded-full",
+              outside: "cursor-now-allowed",
+              range_middle: "bg-blue-200 text-blue-800 rounded-full",
+              range_end: "bg-blue-600 text-white rounded-full",
+              root: `${defaultClassNames.root} shadow-lg p-5 rounded-xl`,
+              today: "border border-amber-500 rounded-full font-bold",
+              chevron: "fill-blue-600",
             }}
           />
         </div>

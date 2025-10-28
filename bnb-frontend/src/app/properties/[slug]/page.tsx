@@ -51,6 +51,7 @@ export default function PropertyPage() {
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
         <PropertyHeader
           propertyName={property.name}
+          propertyLocation={property.location}
           isOwner={isOwner}
           onEditClick={handleEditClick}
         />
@@ -61,8 +62,8 @@ export default function PropertyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Details */}
           <div className="lg:col-span-2 bg-base-100 p-8 rounded-2xl shadow-xl">
-            <PropertyDetails description={property.description} />
             {property.user && <HostProfile host={property.user} />}
+            <PropertyDetails description={property.description} />
           </div>
 
           {/* Right Column: Booking */}

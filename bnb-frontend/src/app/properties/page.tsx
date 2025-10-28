@@ -8,7 +8,8 @@ import { useProperties } from "@/hooks/useProperties";
 const PropertiesPage = () => {
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get("search") || "";
-  const { properties, loading, error, deleteProperty } = useProperties(searchTerm);
+  const { properties, loading, error, deleteProperty } =
+    useProperties(searchTerm);
   const { user } = useAuth();
 
   const handleDelete = async (propertyId: string) => {
@@ -35,7 +36,12 @@ const PropertiesPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Available Properties</h1>
+      <div className="flex flex-col gap-2 mb-6">
+        <h1 className="text-3xl font-bold text-center">Featured Apartments</h1>
+        <p className="text-center">
+          Handpicked properties for your perfect getaway
+        </p>
+      </div>
       {properties.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
