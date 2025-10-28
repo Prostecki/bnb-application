@@ -24,15 +24,14 @@ body {
   --rdp-accent-color: #3b82f6;
   --rdp-accent-color-dark: #1e40af;
 }
-πø
 
-/* Общие стили для всех заблокированных дней */
+/* General styles for all disabled days */
 .rdp-day_disabled {
   cursor: not-allowed !important;
   text-decoration: line-through;
 }
 
-/* Прошедшие дни - светло-серые */
+/* Past days - light gray */
 .rdp-day_disabled[data-past="true"] {
   background-color: #f9fafb !important;
   color: #d1d5db !important;
@@ -44,7 +43,7 @@ body {
   color: #d1d5db !important;
 }
 
-/* Заблокированные дни из базы данных - красноватые */
+/* Disabled days from the database - reddish */
 .rdp-day_disabled[data-booked="true"] {
   background-color: #fee2e2 !important;
   color: #dc2626 !important;
@@ -57,20 +56,20 @@ body {
   color: #b91c1c !important;
 }
 
-/* Обычные заблокированные дни (если не помечены специально) */
+/* Normal disabled days (if not specially marked) */
 .rdp-day_disabled:not([data-past]):not([data-booked]) {
   background-color: #f3f4f6 !important;
   color: #9ca3af !important;
   opacity: 0.5 !important;
 }
 
-/* Выбранные дни */
+/* Selected days */
 .rdp-day_selected {
   background-color: #3b82f6 !important;
   color: white !important;
 }
 
-/* Доступные даты из базы данных - зеленые */
+/* Available dates from the database - green */
 .rdp-day_available {
   background-color: #dcfce7 !important;
   color: #16a34a !important;
@@ -83,7 +82,7 @@ body {
   color: #15803d !important;
 }
 
-/* Недоступные даты (не в availability) - серые */
+/* Unavailable dates (not in availability) - gray */
 .rdp-day_unavailable {
   background-color: #f9fafb !important;
   color: #9ca3af !important;
@@ -95,7 +94,7 @@ body {
   color: #9ca3af !important;
 }
 
-/* Hover для доступных дней */
+/* Hover for available days */
 .rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
   background-color: #e5e7eb;
 }

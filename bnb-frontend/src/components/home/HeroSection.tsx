@@ -5,9 +5,9 @@ export default function HeroSection() {
     <div className="hero min-h-[60vh] bg-base-100">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <img
-          src="https://picsum.photos/id/1062/800/600"
+          src="https://images.unsplash.com/photo-1730653784025-2266f3baa0f8?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470"
           className="w-full lg:max-w-lg rounded-lg shadow-2xl"
-          alt="Beautiful rental property"
+          alt="Stockholm, Sweden"
         />
         <div>
           <h1 className="text-5xl font-bold">

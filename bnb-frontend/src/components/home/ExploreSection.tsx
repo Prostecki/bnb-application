@@ -10,7 +10,7 @@ export default function ExploreSection() {
           <div className="card bg-base-100 shadow-xl image-full">
             <figure>
               <img
-                src="https://picsum.photos/id/1011/400/300"
+                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470"
                 alt="Entire Homes"
               />
             </figure>
@@ -24,7 +24,7 @@ export default function ExploreSection() {
           <div className="card bg-base-100 shadow-xl image-full">
             <figure>
               <img
-                src="https://picsum.photos/id/103/400/300"
+                src="https://images.unsplash.com/photo-1758311178620-749d33c6ff29?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1932"
                 alt="Unique Stays"
               />
             </figure>
@@ -38,7 +38,7 @@ export default function ExploreSection() {
           <div className="card bg-base-100 shadow-xl image-full">
             <figure>
               <img
-                src="https://picsum.photos/id/237/400/300"
+                src="https://images.unsplash.com/photo-1551887373-3c5bd224f6e2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGV0JTIwZnJpZW5kbHl8ZW58MHwwfDB8fHww&auto=format&fit=crop&q=60&w=500"
                 alt="Pets Allowed"
               />
             </figure>

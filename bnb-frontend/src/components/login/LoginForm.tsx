@@ -55,9 +55,14 @@ export default function LoginForm({
             />
           </div>
           <div className="form-control">
-            <label className="label" htmlFor="password">
-              <span className="label-text">Password</span>
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="label" htmlFor="password">
+                <span className="label-text">Password</span>
+              </label>
+              <Link href="/forgot-password" passHref className="label-text-alt link link-hover">
+                Forgot password?
+              </Link>
+            </div>
             <input
               type="password"
               id="password"
