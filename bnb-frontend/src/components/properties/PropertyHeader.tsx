@@ -14,14 +14,14 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
   onEditClick,
 }) => {
   return (
-    <div className="flex flex-col justify-between items-start mb-6">
+    <div className="grid grid-cols-1 justify-between items-start mb-6">
       <h1 className="text-4xl font-bold">{propertyName}</h1>
       <div className="flex items-center mt-4">
         <img className="w-6" src="/location.png" />
         <p className="text-xl text-gray-500/80">{propertyLocation}</p>
       </div>
       {isOwner && (
-        <button onClick={onEditClick} className="btn btn-secondary">
+        <button onClick={onEditClick} className="btn w-48 btn-primary mt-6">
           Edit Property
         </button>
       )}

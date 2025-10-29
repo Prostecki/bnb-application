@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import type { Property } from "@/models/property.model";
 import CreatePropertyForm from "@/components/properties/CreatePropertyForm";
 import EditPropertyModal from "@/components/properties/EditPropertyModal";
+import Link from "next/link";
 
 interface MyPropertiesProps {
   initialProperties: Property[];
@@ -95,11 +96,16 @@ const MyProperties = ({
           {properties.map((property) => (
             <div key={property.id} className="card bg-base-100 shadow-xl">
               <figure>
-                <img
-                  src={property.imageUrl}
-                  alt={property.name}
-                  className="w-full h-48 object-cover"
-                />
+                <Link
+                  className="relative w-full"
+                  href={`/properties/${property.id}`}
+                >
+                  <img
+                    src={property.imageUrl}
+                    alt={property.name}
+                    className="w-full h-48 object-cover hover:scale-105 duration-300 hover:opacity-25"
+                  />
+                </Link>
               </figure>
               <div className="card-body">
                 <h3 className="card-title">{property.name}</h3>
