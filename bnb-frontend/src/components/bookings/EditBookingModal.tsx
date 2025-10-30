@@ -16,7 +16,9 @@ const EditBookingModal = ({
   onClose,
   onBookingUpdated,
 }: EditBookingModalProps) => {
-  const [guestFullName, setGuestFullName] = useState(booking.guestFullName || "");
+  const [guestFullName, setGuestFullName] = useState(
+    booking.guestFullName || ""
+  );
   const [guestEmail, setGuestEmail] = useState(booking.guestEmail || "");
   const [guestPhoneNumber, setGuestPhoneNumber] = useState(
     booking.guestPhoneNumber || ""
@@ -87,17 +89,19 @@ const EditBookingModal = ({
     <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex justify-center items-center p-4 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md max-h-full overflow-y-auto text-black">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <h2 className="text-2xl font-semibold mb-4">Edit Booking</h2>
+          <h2 className="text-2xl text-black font-semibold mb-4">
+            Edit Booking
+          </h2>
           {error && <p className="text-red-500">{error}</p>}
           {success && <p className="text-green-500">{success}</p>}
 
           <div className="form-control">
-            <label className="label">
+            <label className="label mb-2">
               <span className="label-text">Guest Full Name</span>
             </label>
             <input
               type="text"
-              className="input input-bordered w-full text-black"
+              className="border p-2 rounded-lg shadow-lg w-full text-black"
               value={guestFullName}
               onChange={(e) => setGuestFullName(e.target.value)}
               required
@@ -105,12 +109,12 @@ const EditBookingModal = ({
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label mb-2">
               <span className="label-text">Guest Email</span>
             </label>
             <input
               type="email"
-              className="input input-bordered w-full text-black"
+              className="border p-2 rounded-lg shadow-lg w-full text-black"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
               required
@@ -118,12 +122,12 @@ const EditBookingModal = ({
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label mb-2">
               <span className="label-text">Guest Phone Number</span>
             </label>
             <input
               type="tel"
-              className="input input-bordered w-full text-black"
+              className="border p-2 rounded-lg w-full shadow-lg text-black"
               value={guestPhoneNumber}
               onChange={(e) => setGuestPhoneNumber(e.target.value)}
               required
@@ -131,13 +135,13 @@ const EditBookingModal = ({
           </div>
 
           <div className="form-control">
-            <label className="label">
+            <label className="label mb-2">
               <span className="label-text">Number of Guests</span>
             </label>
             <input
               type="number"
               min="1"
-              className="input input-bordered w-full text-black"
+              className="border p-2 rounded-lg shadow-lg w-full text-black"
               value={numberOfGuests}
               onChange={(e) => setNumberOfGuests(Number(e.target.value))}
               required
