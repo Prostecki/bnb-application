@@ -19,13 +19,6 @@ body {
   color: var(--foreground);
 }
 
-h1,
-h3,
-h4,
-p {
-  color: var(--foreground);
-}
-
 /* React Day Picker custom styles */
 .rdp {
   --rdp-accent-color: #3b82f6;

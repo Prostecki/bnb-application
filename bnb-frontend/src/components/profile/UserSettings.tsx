@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import type { User } from '@/models/user.model';
+import React, { useState, useEffect } from "react";
+import type { User } from "@/models/user.model";
 
 interface UserSettingsProps {
   user: User | null;
@@ -7,47 +7,60 @@ interface UserSettingsProps {
 }
 
 const UserSettings: React.FC<UserSettingsProps> = ({ user, onDataChange }) => {
-  const [description, setDescription] = useState(user?.description || '');
-  const [location, setLocation] = useState(user?.location || '');
+  const [description, setDescription] = useState(user?.description || "");
+  const [location, setLocation] = useState(user?.location || "");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    setDescription(user?.description || '');
-    setLocation(user?.location || '');
+    setDescription(user?.description || "");
+    setLocation(user?.location || "");
   }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setMessage("");
     setIsError(false);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('Authentication token not found.');
+        throw new Error("Authentication token not found.");
       }
 
-      const response = await fetch('http://localhost:3000/api/auth/profile', {
-        method: 'PUT',
+      const updatedFields: { description?: string; location?: string } = {};
+      if (description !== user?.description) {
+        updatedFields.description = description;
+      }
+      if (location !== user?.location) {
+        updatedFields.location = location;
+      }
+
+      if (Object.keys(updatedFields).length === 0) {
+        setMessage("No changes to save.");
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/api/auth/profile", {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ description, location }),
+        body: JSON.stringify(updatedFields),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update profile.');
+        throw new Error(errorData.message || "Failed to update profile.");
       }
 
-      setMessage('Profile updated successfully!');
+      setMessage("Profile updated successfully!");
       onDataChange(); // Refresh user data in parent component
     } catch (err: any) {
-      setMessage(err.message || 'An error occurred.');
+      setMessage(err.message || "An error occurred.");
       setIsError(true);
     } finally {
       setLoading(false);
@@ -83,10 +96,14 @@ const UserSettings: React.FC<UserSettingsProps> = ({ user, onDataChange }) => {
           />
         </div>
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Saving...' : 'Save Changes'}
+          {loading ? "Saving..." : "Save Changes"}
         </button>
         {message && (
-          <div className={`alert ${isError ? 'alert-error' : 'alert-success'} mt-4`}>
+          <div
+            className={`alert ${
+              isError ? "alert-error" : "alert-success"
+            } mt-4`}
+          >
             {message}
           </div>
         )}

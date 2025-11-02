@@ -170,12 +170,11 @@ export const getCurrentUser = async (accessToken: string) => {
 
 export const updateProfileService = async (
   userId: string,
-  description: string,
-  location: string
+  updateData: { description?: string; location?: string }
 ) => {
   const { data, error } = await supabase
     .from("users")
-    .update({ description, location })
+    .update(updateData)
     .eq("id", userId);
 
   if (error) {

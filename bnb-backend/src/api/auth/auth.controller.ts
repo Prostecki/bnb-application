@@ -15,8 +15,11 @@ export const signUpController = async (c: Context) => {
     const credentials = await c.req.json<UserCredentials>();
     const data = await signUpUser(credentials);
     return c.json(data, 201);
-  } catch (error: any) {
-    return c.json({ error: error.message }, 400);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return c.json({ error: error.message }, 400);
+    }
+    return c.json({ error: "An unknown error occurred" }, 400);
   }
 };
 
@@ -25,8 +28,11 @@ export const signInController = async (c: Context) => {
     const credentials = await c.req.json<Omit<UserCredentials, "name">>();
     const data = await signInUser(credentials);
     return c.json(data);
-  } catch (error: any) {
-    return c.json({ error: error.message }, 401);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return c.json({ error: error.message }, 401);
+    }
+    return c.json({ error: "An unknown error occurred" }, 401);
   }
 };
 
@@ -38,8 +44,11 @@ export const forgotPasswordController = async (c: Context) => {
     }
     await forgotPasswordService(email);
     return c.json({ message: "Password reset email sent" });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return c.json({ error: error.message }, 500);
+    }
+    return c.json({ error: "An unknown error occurred" }, 500);
   }
 };
 
@@ -51,8 +60,11 @@ export const resetPasswordController = async (c: Context) => {
     }
     await forgotPasswordService(email);
     return c.json({ message: "Password reset email sent" });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return c.json({ error: error.message }, 500);
+    }
+    return c.json({ error: "An unknown error occurred" }, 500);
   }
 };
 
@@ -60,8 +72,11 @@ export const signOutController = async (c: Context) => {
   try {
     await signOutService();
     return c.json({ message: "Signed out successfully" });
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return c.json({ error: error.message }, 500);
+    }
+    return c.json({ error: "An unknown error occurred" }, 500);
   }
 };
 
@@ -85,8 +100,12 @@ export const getMeController = async (c: Context) => {
       description: userData.description,
       location: userData.location,
     });
-  } catch (error: any) {
-    console.error("Error in getMeController:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in getMeController:", error.message);
+      return c.json({ error: "Failed to get user information" }, 401);
+    }
+    console.error("Error in getMeController:", error);
     return c.json({ error: "Failed to get user information" }, 401);
   }
 };
@@ -107,14 +126,18 @@ export const updateProfileController = async (c: Context) => {
     }
 
     const { description, location } = await c.req.json<{
-      description: string;
-      location: string;
+      description?: string;
+      location?: string;
     }>();
 
-    await updateProfileService(user.id, description, location);
+    await updateProfileService(user.id, { description, location });
     return c.json({ message: "Profile updated successfully" });
-  } catch (error: any) {
-    console.error("Error in updateProfileController:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in updateProfileController:", error.message);
+      return c.json({ error: "Failed to update profile" }, 500);
+    }
+    console.error("Error in updateProfileController:", error);
     return c.json({ error: "Failed to update profile" }, 500);
   }
 };
