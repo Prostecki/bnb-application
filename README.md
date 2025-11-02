@@ -1,5 +1,7 @@
 # BNB Application
 
+![BNB Application Screenshot](./bnb-frontend/public/bnb-app-screenshot.png)
+
 This project is a full-stack property rental platform, similar to Airbnb. It allows users to browse, book, and manage property listings. It is built as a monorepo containing a Next.js frontend and a Hono backend API.
 
 ## About The Project
