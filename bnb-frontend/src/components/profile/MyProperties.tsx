@@ -117,18 +117,20 @@ const MyProperties = ({
                     <h4 className="font-semibold mb-2">Availability</h4>
                     <div className="flex flex-wrap gap-2">
                       {property.stillAvailableDates?.length > 0 ? (
-                        property.stillAvailableDates.map((date) => (
-                          <div
-                            key={date}
-                            className="badge badge-soft badge-success badge-outline"
-                          >
-                            {new Date(date).toLocaleDateString(undefined, {
-                              month: "short",
-                              day: "numeric",
-                              timeZone: "UTC",
-                            })}
-                          </div>
-                        ))
+                        property.stillAvailableDates
+                          .map((date) => (
+                            <div
+                              key={date}
+                              className="badge badge-soft badge-success badge-outline"
+                            >
+                              {new Date(date).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                timeZone: "UTC",
+                              })}
+                            </div>
+                          ))
+                          .slice(0, 10)
                       ) : (
                         <p className="text-xs">No remaining availability.</p>
                       )}
@@ -158,6 +160,24 @@ const MyProperties = ({
                 </div>
 
                 <div className="divider"></div>
+
+                {property.additionalImages &&
+                  property.additionalImages.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2">Additional Images</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {property.additionalImages.map((image, index) => (
+                          <img
+                            key={index}
+                            src={image}
+                            alt={`Additional image ${index + 1}`}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        ))}
+                      </div>
+                      <div className="divider"></div>
+                    </div>
+                  )}
 
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">

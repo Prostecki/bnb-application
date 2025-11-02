@@ -24,7 +24,7 @@ propertiesRouter.get("/:id/bookings", getPropertyBookingsController);
 
 // Protected routes
 propertiesRouter.post("/", jwtMiddleware, createPropertyController);
-propertiesRouter.put("/:id", jwtMiddleware, updatePropertyController);
+propertiesRouter.patch("/:id", jwtMiddleware, updatePropertyController);
 propertiesRouter.delete("/:id", jwtMiddleware, deletePropertyController);
 
 export default propertiesRouter;

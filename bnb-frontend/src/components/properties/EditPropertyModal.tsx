@@ -37,6 +37,12 @@ const EditPropertyModal = ({
     .filter((url) => url.trim() !== "");
 
   useEffect(() => {
+    if (property.additionalImages) {
+      setAdditionalImages(property.additionalImages.join("\n"));
+    }
+  }, [property.additionalImages]);
+
+  useEffect(() => {
     // Pre-populate the calendar with existing availability
     if (property.availability) {
       const availableDates = property.availability.map((dateStr) =>
@@ -62,25 +68,32 @@ const EditPropertyModal = ({
       format(date, "yyyy-MM-dd")
     );
 
+    const updatedFields: Partial<Property> = {};
+
+    if (name !== property.name) updatedFields.name = name;
+    if (description !== property.description)
+      updatedFields.description = description;
+    if (location !== property.location) updatedFields.location = location;
+    if (pricePerNight !== property.pricePerNight)
+      updatedFields.pricePerNight = pricePerNight;
+    if (pricePerExtraGuest !== property.pricePerExtraGuest)
+      updatedFields.pricePerExtraGuest = pricePerExtraGuest;
+    if (imageUrl !== property.imageUrl) updatedFields.imageUrl = imageUrl;
+    if (availabilityDates !== property.availability)
+      updatedFields.availability = availabilityDates;
+    if (additionalImages !== property.additionalImages?.join("\n"))
+      updatedFields.additionalImages = additionalImagesArray;
+
     try {
       const response = await fetch(
         `http://localhost:3000/api/properties/${property.id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            name,
-            description,
-            location,
-            pricePerNight,
-            pricePerExtraGuest,
-            imageUrl,
-            availability: availabilityDates,
-            additionalImages: additionalImagesArray,
-          }),
+          body: JSON.stringify(updatedFields),
         }
       );
 
