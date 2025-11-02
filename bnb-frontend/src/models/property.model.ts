@@ -16,4 +16,5 @@ export interface Property {
   stillAvailableDates: string[];
   bookedDates: string[];
   additionalImages: string[];
+  rating: number;
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Rating from "../rating/Rating";
 
 interface overallPointsInterface {
   id: number;
@@ -56,12 +57,7 @@ const PropertyRatings = () => {
             {overallPoints.map((point) => (
               <div key={point.id} className="flex gap-2 items-center">
                 <label htmlFor={point.id.toString()}>{point.id}</label>
-                <progress
-                  id={point.id.toString()}
-                  className="progress progress-neutral w-40"
-                  value={point.rating}
-                  max="5"
-                />
+                <Rating rating={point.rating} />
               </div>
             ))}
           </div>

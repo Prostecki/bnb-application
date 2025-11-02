@@ -9,6 +9,7 @@ interface FilterSidebarProps {
     location: string;
     minPrice: number | null;
     maxPrice: number | null;
+    rating: number | null;
   }) => void;
 }
 
@@ -16,6 +17,7 @@ export default function FilterSidebar({ properties, onFilterChange }: FilterSide
   const [location, setLocation] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [rating, setRating] = useState("");
   const [uniqueLocations, setUniqueLocations] = useState<string[]>([]);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export default function FilterSidebar({ properties, onFilterChange }: FilterSide
       location,
       minPrice: minPrice ? Number(minPrice) : null,
       maxPrice: maxPrice ? Number(maxPrice) : null,
+      rating: rating ? Number(rating) : null,
     });
   };
 
@@ -73,6 +76,23 @@ export default function FilterSidebar({ properties, onFilterChange }: FilterSide
             onChange={(e) => setMaxPrice(e.target.value)}
           />
         </div>
+      </div>
+      <div className="form-control mb-4">
+        <label className="label">
+          <span className="label-text">Rating</span>
+        </label>
+        <select
+          className="select select-bordered"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+        >
+          <option value="">All</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+          <option value="5">5</option>
+        </select>
       </div>
       <button className="btn btn-primary w-full" onClick={handleFilter}>
         Apply Filters

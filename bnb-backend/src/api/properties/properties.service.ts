@@ -14,6 +14,7 @@ interface PropertyFromDb {
   user_id: string;
   availability: string[] | null;
   additional_images: string[] | null;
+  rating: number;
   user: User;
   bookings: any[]; // Comes from the join
 }
@@ -30,13 +31,14 @@ const mapToCamelCase = (property: PropertyFromDb): any => ({
   user: property.user,
   availability: property.availability || [],
   additionalImages: property.additional_images || [],
+  rating: property.rating,
   bookings: property.bookings || [],
 });
 
 export const getProperties = async (search?: string) => {
   let query = supabase
     .from("properties")
-    .select("*, availability, user:users(*)");
+    .select("*, availability, rating, user:users(*)");
 
   if (search) {
     query = query.ilike("location", `%${search}%`);

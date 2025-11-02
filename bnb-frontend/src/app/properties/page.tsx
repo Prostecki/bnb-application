@@ -7,11 +7,13 @@ import { useProperties } from "@/hooks/useProperties";
 import FilterSidebar from "../../components/properties/FilterSidebar";
 import { useState, useEffect } from "react";
 import { Property } from "@/models/property.model";
+import Rating from "@/components/rating/Rating";
 
 interface Filter {
   location: string;
   minPrice: number | null;
   maxPrice: number | null;
+  rating: number | null;
 }
 
 const PropertiesPage = () => {
@@ -44,6 +46,12 @@ const PropertiesPage = () => {
     if (filters.maxPrice !== null) {
       tempProperties = tempProperties.filter(
         (p) => p.pricePerNight <= filters.maxPrice!
+      );
+    }
+
+    if (filters.rating !== null) {
+      tempProperties = tempProperties.filter(
+        (p) => p.rating >= filters.rating!
       );
     }
 
@@ -110,7 +118,7 @@ const PropertiesPage = () => {
                   </div>
                   <h2 className="card-title">{property.name}</h2>
                   <p className="truncate">{property.description}</p>
-
+                  <Rating rating={property.rating} />
                   <div className="card-actions justify-between items-center mt-2">
                     <Link
                       href={`/properties/${property.id}`}
