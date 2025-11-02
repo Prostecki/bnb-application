@@ -1,3 +1,6 @@
+import type { Booking } from "./booking.model";
+import type { User } from "./user.model";
+
 export interface Property {
   id: string;
   name: string;
@@ -7,14 +10,11 @@ export interface Property {
   pricePerExtraGuest: number;
   imageUrl: string;
   userId: string;
-  user: {
-    name: string;
-    description: string;
-    location: string;
-  };
+  user: User;
   availability: string[];
   stillAvailableDates: string[];
   bookedDates: string[];
   additionalImages: string[];
   rating: number;
+  bookings: Booking[];
 }

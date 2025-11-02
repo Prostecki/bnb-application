@@ -4,8 +4,8 @@ import { toUpperCaseName } from "@/utils/string";
 interface HostProfileProps {
   host?: {
     name: string;
-    description: string;
-    location: string;
+    description?: string;
+    location?: string;
   };
 }
 

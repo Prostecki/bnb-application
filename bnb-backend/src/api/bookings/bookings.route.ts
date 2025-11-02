@@ -17,6 +17,6 @@ bookingsRouter.post("/", jwtMiddleware, createBookingController);
 bookingsRouter.get("/", jwtMiddleware, getBookingsController);
 bookingsRouter.get("/:id", jwtMiddleware, getBookingByIdController);
 bookingsRouter.delete("/:id", jwtMiddleware, deleteBookingController);
-bookingsRouter.put("/:id", jwtMiddleware, updateBookingController);
+bookingsRouter.patch("/:id", jwtMiddleware, updateBookingController);
 
 export default bookingsRouter;

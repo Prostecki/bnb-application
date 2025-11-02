@@ -1,3 +1,5 @@
+import type { Property } from "./property.model";
+
 export interface Booking {
   id: string;
   checkInDate: string;
@@ -7,8 +9,5 @@ export interface Booking {
   guestFullName: string;
   guestEmail: string;
   guestPhoneNumber: string;
-  properties: {
-    name: string;
-    image_url: string; // This can remain as is, as it's a nested property from another table
-  } | null;
+  properties: Property | null;
 }

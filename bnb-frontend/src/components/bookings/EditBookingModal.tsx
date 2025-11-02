@@ -48,23 +48,39 @@ const EditBookingModal = ({
       return;
     }
 
-    const updatedData: Partial<Booking> = {
-      guestFullName,
-      guestEmail,
-      guestPhoneNumber,
-      numberOfGuests,
-    };
+    const updatedFields: Partial<Booking> = {};
+
+    if (guestFullName !== booking.guestFullName) {
+      updatedFields.guestFullName = guestFullName;
+    }
+    if (guestEmail !== booking.guestEmail) {
+      updatedFields.guestEmail = guestEmail;
+    }
+    if (guestPhoneNumber !== booking.guestPhoneNumber) {
+      updatedFields.guestPhoneNumber = guestPhoneNumber;
+    }
+    if (numberOfGuests !== booking.numberOfGuests) {
+      updatedFields.numberOfGuests = numberOfGuests;
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+      setSuccess("No changes to save.");
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+      return;
+    }
 
     try {
       const response = await fetch(
         `http://localhost:3000/api/bookings/${booking.id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(updatedData),
+          body: JSON.stringify(updatedFields),
         }
       );
 

@@ -23,6 +23,11 @@ The application provides the following main features:
 -   **Database:** Supabase (PostgreSQL)
 -   **DevOps & Tooling:** Docker, GitHub Actions, PNPM Workspaces
 
+## Recent Changes
+
+-   **Property Updates:** The method for updating properties has been changed from `PUT` to `PATCH`. This allows for partial updates to a property, meaning you only need to send the fields you want to change, rather than the entire property object. This makes the API more efficient and easier to use.
+-   **Data Refetching:** The frontend now uses a callback function called `onDataChange` to automatically refetch data after a property is created, updated, or deleted. This ensures that the UI is always up-to-date with the latest data from the backend.
+
 ## Getting Started
 
 The recommended way to run this project is by using Docker.
@@ -99,7 +104,7 @@ The backend exposes a RESTful API for managing resources.
 | `GET`    | `/me`             | Get properties for the logged-in user.| Yes       |
 | `GET`    | `/:id/bookings`   | Get all bookings for a property.      | No        |
 | `POST`   | `/`               | Create a new property.                | Yes       |
-| `PUT`    | `/:id`            | Update a property.                    | Yes       |
+| `PATCH`  | `/:id`            | Update a property.                    | Yes       |
 | `DELETE` | `/:id`            | Delete a property.                    | Yes       |
 
 ### Booking Routes (`/api/bookings`)
@@ -109,5 +114,5 @@ The backend exposes a RESTful API for managing resources.
 | `GET`    | `/`    | Get bookings for logged-in user.| Yes       |
 | `GET`    | `/:id` | Get a single booking by ID.     | Yes       |
 | `POST`   | `/`    | Create a new booking.           | Yes       |
-| `PUT`    | `/:id` | Update a booking.               | Yes       |
+| `PATCH`  | `/:id` | Update a booking.               | Yes       |
 | `DELETE` | `/:id` | Cancel a booking.               | Yes       |

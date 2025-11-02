@@ -5,7 +5,7 @@ import type { BookingSnakeCase } from "@/types/booking.types";
 import type { User } from "@/models/user.model";
 
 // Helper to map incoming snake_case data to camelCase
-const mapBookingToCamelCase = (booking: BookingSnakeCase): Booking => ({
+const mapBookingToCamelCase = (booking: any): Booking => ({
   id: booking.id,
   checkInDate: booking.check_in_date,
   checkOutDate: booking.check_out_date,
@@ -14,7 +14,25 @@ const mapBookingToCamelCase = (booking: BookingSnakeCase): Booking => ({
   guestFullName: booking.guest_full_name,
   guestEmail: booking.guest_email,
   guestPhoneNumber: booking.guest_phone_number,
-  properties: booking.properties,
+  properties: booking.properties
+    ? {
+        id: booking.properties.id,
+        name: booking.properties.name,
+        description: booking.properties.description,
+        location: booking.properties.location,
+        imageUrl: booking.properties.image_url,
+        pricePerNight: booking.properties.price_per_night,
+        pricePerExtraGuest: booking.properties.price_per_extra_guest,
+        availability: booking.properties.availability,
+        additionalImages: booking.properties.additional_images,
+        userId: booking.properties.user_id,
+        rating: booking.properties.rating,
+        user: booking.properties.user,
+        bookings: booking.properties.bookings,
+        stillAvailableDates: booking.properties.still_available_dates,
+        bookedDates: booking.properties.booked_dates,
+      }
+    : null,
 });
 
 // New: helper to safely obtain a message from unknown errors (no any)

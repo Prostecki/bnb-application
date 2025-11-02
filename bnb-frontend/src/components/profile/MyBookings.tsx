@@ -80,7 +80,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
                 <div className="md:flex-shrink-0">
                   <img
                     className="h-64 w-full object-cover md:w-64"
-                    src={booking.properties?.image_url || ""}
+                    src={booking.properties?.imageUrl || ""}
                     alt={`View of ${booking.properties?.name}`}
                   />
                 </div>
@@ -95,6 +95,27 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
                       Booking ID: {booking.id.slice(0, 8)}
                     </p>
                   </div>
+
+                  {booking.properties?.additionalImages &&
+                    booking.properties.additionalImages.length > 0 && (
+                      <div className="mt-4">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                          Additional Images
+                        </h3>
+                        <div className="flex space-x-2 mt-2">
+                          {booking.properties.additionalImages.map(
+                            (image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                alt={`Additional image ${index + 1}`}
+                                className="w-16 h-16 object-cover rounded-lg shadow-md"
+                              />
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-gray-700 dark:text-gray-300">
                     <div className="flex items-center">
@@ -166,7 +187,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
       ) : (
         <div className="text-center py-16 px-8 bg-base-200 rounded-lg">
           <h3 className="text-lg font-semibold">No bookings found</h3>
-          <p className="mt-1">You haven't made any bookings yet.</p>
+          <p className="mt-1">You haven\'t made any bookings yet.</p>
         </div>
       )}
     </section>

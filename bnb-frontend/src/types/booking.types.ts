@@ -1,3 +1,5 @@
+import type { Property } from "@/models/property.model";
+
 export interface BookingSnakeCase {
   id: string;
   check_in_date: string;
@@ -7,8 +9,5 @@ export interface BookingSnakeCase {
   guest_full_name: string;
   guest_email: string;
   guest_phone_number: string;
-  properties: {
-    name: string;
-    image_url: string;
-  } | null;
+  properties: Property | null;
 }
