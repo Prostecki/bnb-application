@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,27 +13,43 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        strict: {
-          "primary": "#2563EB",        // blue-600
-          "primary-content": "#FFFFFF", // White text on primary
-          "secondary": "#4B5563",      // gray-600
-          "secondary-content": "#FFFFFF", // White text on secondary
-          "accent": "#1D4ED8",         // blue-800
+        light: {
+          "primary": "#2563EB",
+          "primary-content": "#FFFFFF",
+          "secondary": "#4B5563",
+          "secondary-content": "#FFFFFF",
+          "accent": "#1D4ED8",
           "accent-content": "#FFFFFF",
-          "neutral": "#F3F4F6",        // gray-100
-          "neutral-content": "#1F2937",  // gray-800 text on neutral
-          "base-100": "#FFFFFF",       // white
-          "base-200": "#F9FAFB",       // gray-50
-          "base-300": "#F3F4F6",       // gray-100
-          "base-content": "#1F2937",    // Default text color (gray-800)
+          "neutral": "#F3F4F6",
+          "neutral-content": "#1F2937",
+          "base-100": "#FFFFFF",
+          "base-200": "#F9FAFB",
+          "base-300": "#F3F4F6",
+          "base-content": "#1F2937",
           "info": "#3ABFF8",
           "success": "#36D399",
           "warning": "#FBBD23",
-          "error": "#EF4444",          // red-500
+          "error": "#EF4444",
+        },
+        dark: {
+          "primary": "#3B82F6",
+          "primary-content": "#FFFFFF",
+          "secondary": "#6B7280",
+          "secondary-content": "#FFFFFF",
+          "accent": "#60A5FA",
+          "accent-content": "#1F2937",
+          "neutral": "#1F2937",
+          "neutral-content": "#F9FAFB",
+          "base-100": "#111827",
+          "base-200": "#1F2937",
+          "base-300": "#374151",
+          "base-content": "#F9FAFB",
+          "info": "#0CA5E9",
+          "success": "#22C55E",
+          "warning": "#F59E0B",
+          "error": "#F87171",
         },
       },
-      "light",
-      "dark",
     ],
   },
 };

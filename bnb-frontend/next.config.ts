@@ -51,6 +51,18 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "kpcnotebook.scholastic.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "content.api.news",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   plugins: {

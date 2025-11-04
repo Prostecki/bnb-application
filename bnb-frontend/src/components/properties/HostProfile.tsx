@@ -37,7 +37,7 @@ const HostProfile: React.FC<HostProfileProps> = ({ host }) => {
               height={40}
               className="object-contain"
             />
-            <p className="text-lg text-black/60">
+            <p className="text-lg text-black/60 dark:text-white">
               {host.description || "The host did not provide some information"}
             </p>
           </div>
@@ -48,7 +48,7 @@ const HostProfile: React.FC<HostProfileProps> = ({ host }) => {
               width={40}
               height={40}
             />
-            <p className="text-lg text-black/60">
+            <p className="text-lg text-black/60 dark:text-white">
               {host.location || "The host didn't provide location"}
             </p>
           </div>
