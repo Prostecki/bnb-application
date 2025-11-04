@@ -1,4 +1,9 @@
-import React from 'react';
+"use client";
+import React from "react";
+
+const handleMessage = () => {
+  alert("Searching is not available. Stay tuned!");
+};
 
 const SearchBar = () => {
   return (
@@ -38,7 +43,9 @@ const SearchBar = () => {
           />
         </div>
       </div>
-      <button className="btn btn-primary w-full mt-6">Search</button>
+      <button onClick={handleMessage} className="btn btn-primary w-full mt-6">
+        Search
+      </button>
     </div>
   );
 };
