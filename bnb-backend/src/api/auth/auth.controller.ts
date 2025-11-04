@@ -25,6 +25,7 @@ export const signUpController = async (c: Context) => {
 
 export const signInController = async (c: Context) => {
   try {
+    //Omit - exclude something that we don't want to have,
     const credentials = await c.req.json<Omit<UserCredentials, "name">>();
     const data = await signInUser(credentials);
     return c.json(data);
