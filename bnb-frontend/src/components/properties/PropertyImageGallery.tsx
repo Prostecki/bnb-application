@@ -24,31 +24,33 @@ const PropertyImageGallery: React.FC<PropertyImageGalleryProps> = ({
 
   return (
     <>
-      <div className="mb-8 grid grid-cols-8 gap-4">
-        <div className="col-span-4 row-span-2 relative w-full h-full rounded-2xl shadow-xl overflow-hidden">
+      <div className="mb-8 grid grid-cols-8 grid-rows-2 gap-4 h-[50vh] max-h-[500px]">
+        {/* Main Image */}
+        <div className="col-span-4 row-span-2 rounded-2xl shadow-xl overflow-hidden cursor-pointer">
           <Image
             src={property.imageUrl}
             alt={property.name}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover cursor-pointer"
+            width={800} // Provide aspect ratio, CSS will handle final size
+            height={600} // Provide aspect ratio, CSS will handle final size
+            className="w-full h-full object-cover"
             onClick={() => openModal(property.imageUrl)}
           />
         </div>
 
+        {/* Additional Images */}
         {property.additionalImages &&
           property.additionalImages.length > 0 &&
           property.additionalImages.slice(0, 4).map((img, index) => (
             <div
               key={index}
-              className="col-span-2 relative h-full w-full rounded-xl shadow-md overflow-hidden"
+              className="col-span-2 rounded-xl shadow-md overflow-hidden cursor-pointer"
             >
               <Image
                 src={img}
                 alt={`${property.name} additional image ${index + 1}`}
-                fill
-                sizes="(max-width: 1024px) 50vw, 25vw"
-                className="object-cover cursor-pointer"
+                width={400} // Provide aspect ratio
+                height={300} // Provide aspect ratio
+                className="w-full h-full object-cover"
                 onClick={() => openModal(img)}
               />
             </div>

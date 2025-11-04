@@ -23,12 +23,18 @@ export default function PropertyDetailCard({
       if (numberOfNights > 0) {
         const totalPrice = numberOfNights * pricePerNight;
         return (
-          <>
-            <p className="text-lg font-semibold">${totalPrice} total</p>
-            <p className="text-sm text-gray-500">
-              ${pricePerNight} / night for {numberOfNights} nights
+          <div className="flex flex-col py-4 gap-4 items-start">
+            <p className="text-lg text-gray-500">
+              <span className="text-black text-xl font-bold underline underline-offset-2">
+                {pricePerNight}$ USD
+              </span>{" "}
+              per night
             </p>
-          </>
+            <p className="text-lg">
+              <span className="font-bold text-xl">Total price:</span>{" "}
+              {totalPrice}$ USD for {numberOfNights} nights
+            </p>
+          </div>
         );
       }
     }
@@ -37,13 +43,12 @@ export default function PropertyDetailCard({
 
   return (
     <div className="card bg-base-100">
-      <div className="card-body">
-        <h2 className="card-title">Booking</h2>
+      <div className="w-full flex flex-col gap-4">
         {renderPrice()}
         <div className="card-actions justify-end">
           {isAuthenticated ? (
             <button
-              className="btn btn-primary"
+              className="btn w-full btn-primary"
               onClick={onBookNowClick}
               disabled={authLoading || !range?.from}
             >
