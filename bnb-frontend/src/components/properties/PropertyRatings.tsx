@@ -29,16 +29,18 @@ const PropertyRatings = () => {
       <div className="text-center py-12">
         <div className="flex flex-col">
           <div className="flex justify-center items-center">
-            <img
-              className="w-30"
+            <Image
+              width={120}
+              height={183}
               src="https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-GuestFavorite/original/78b7687c-5acf-4ef8-a5ea-eda732ae3b2f.png?im_w=240"
-              alt=""
+              alt="Guest Favorite Badge Left"
             />
             <div className="stat-value font-[600] text-8xl mb-10">4.94</div>
-            <img
-              className="w-30"
+            <Image
+              width={120}
+              height={183}
               src="https://a0.muscache.com/im/pictures/airbnb-platform-assets/AirbnbPlatformAssets-GuestFavorite/original/b4005b30-79ff-4287-860c-67829ecd7412.png?im_w=240"
-              alt=""
+              alt="Guest Favorite Badge Right"
             />
           </div>
           <div className="text-black font-[600] mb-5 text-2xl">
@@ -77,6 +79,7 @@ const PropertyRatings = () => {
                     alt={`${rating.name} icon`}
                     layout="fill"
                     objectFit="contain"
+                    sizes="40px"
                   />
                 </div>
               </div>

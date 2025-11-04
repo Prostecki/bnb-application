@@ -2,18 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useProperty } from "../../../hooks/useProperty";
-import BookingModal from "../../../components/properties/BookingModal";
 import { useAuth } from "../../../context/AuthContext";
-import EditPropertyModal from "@/components/properties/EditPropertyModal";
 import BookingSidebar from "@/components/properties/BookingSidebar";
 import { type DateRange } from "react-day-picker";
-import PropertyRatings from "@/components/properties/PropertyRatings";
 import PageStatusIndicator from "@/components/common/PageStatusIndicator";
 import PropertyHeader from "@/components/properties/PropertyHeader";
 import PropertyImageGallery from "@/components/properties/PropertyImageGallery";
 import PropertyDetails from "@/components/properties/PropertyDetails";
 import HostProfile from "@/components/properties/HostProfile";
+
+// Dynamically import non-critical components
+const BookingModal = dynamic(
+  () => import("../../../components/properties/BookingModal")
+);
+const EditPropertyModal = dynamic(
+  () => import("@/components/properties/EditPropertyModal")
+);
+const PropertyRatings = dynamic(
+  () => import("@/components/properties/PropertyRatings")
+);
 
 export default function PropertyPage() {
   const params = useParams();

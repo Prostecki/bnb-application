@@ -1,28 +1,11 @@
-"use client";
-
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+import Providers from "./providers";
 import "./globals.css";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
 
-const AppContent = ({ children }: { children: React.ReactNode }) => {
-  const { loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-grow">{children}</main>
-      <Footer />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Bnb-Application",
+  description:
+    "The application based on clone simillar hotel booking management",
 };
 
 export default function RootLayout({
@@ -33,9 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          <AppContent>{children}</AppContent>
-        </AuthProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

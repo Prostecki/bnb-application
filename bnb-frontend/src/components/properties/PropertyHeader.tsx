@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface PropertyHeaderProps {
   propertyName: string;
@@ -17,7 +18,7 @@ const PropertyHeader: React.FC<PropertyHeaderProps> = ({
     <div className="grid grid-cols-1 justify-between items-start mb-6">
       <h1 className="text-4xl font-bold">{propertyName}</h1>
       <div className="flex items-center mt-4">
-        <img className="w-6" src="/location.png" />
+        <Image src="/location.png" alt="Location icon" width={24} height={24} />
         <p className="text-xl text-gray-500/80">{propertyLocation}</p>
       </div>
       {isOwner && (

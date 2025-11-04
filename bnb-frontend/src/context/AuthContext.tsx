@@ -86,9 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.session?.access_token) {
         localStorage.setItem("token", data.session.access_token);
 
-        // Fetch user profile first, then set authenticated
         await checkAuthStatus();
-        // checkAuthStatus already sets isAuthenticated and user if token is valid
       } else {
         throw new Error("No access token received from server");
       }

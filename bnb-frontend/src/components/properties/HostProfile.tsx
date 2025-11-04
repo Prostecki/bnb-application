@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { toUpperCaseName } from "@/utils/string";
 
 interface HostProfileProps {
@@ -29,17 +30,24 @@ const HostProfile: React.FC<HostProfileProps> = ({ host }) => {
         </div>
         <div className="w-full flex flex-col justify-center gap-4 mt-4 mb-8">
           <div className="flex items-center gap-4">
-            <img
-              className="w-10 object-contain"
+            <Image
               src="/description-icon.png"
-              alt=""
+              alt="Description icon"
+              width={40}
+              height={40}
+              className="object-contain"
             />
             <p className="text-lg text-black/60">
               {host.description || "The host did not provide some information"}
             </p>
           </div>
           <div className="flex gap-4 items-center">
-            <img className="w-10" src="/location-icon.png" alt="" />
+            <Image
+              src="/location-icon.png"
+              alt="Location icon"
+              width={40}
+              height={40}
+            />
             <p className="text-lg text-black/60">
               {host.location || "The host didn't provide location"}
             </p>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 import { Property } from "@/models/property.model";
 
 interface PropertyImageGalleryProps {
@@ -24,43 +25,53 @@ const PropertyImageGallery: React.FC<PropertyImageGalleryProps> = ({
   return (
     <>
       <div className="mb-8 grid grid-cols-8 gap-4">
-        <img
-          src={property.imageUrl}
-          alt={property.name}
-          className="col-span-4 row-span-2 w-full h-full object-cover rounded-2xl shadow-xl cursor-pointer"
-          onClick={() => openModal(property.imageUrl)}
-        />
+        <div className="col-span-4 row-span-2 relative w-full h-full rounded-2xl shadow-xl overflow-hidden">
+          <Image
+            src={property.imageUrl}
+            alt={property.name}
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover cursor-pointer"
+            onClick={() => openModal(property.imageUrl)}
+          />
+        </div>
 
         {property.additionalImages &&
           property.additionalImages.length > 0 &&
-          property.additionalImages
-            .slice(0, 4)
-            .map((img, index) => (
-              <img
-                key={index}
+          property.additionalImages.slice(0, 4).map((img, index) => (
+            <div
+              key={index}
+              className="col-span-2 relative h-full w-full rounded-xl shadow-md overflow-hidden"
+            >
+              <Image
                 src={img}
                 alt={`${property.name} additional image ${index + 1}`}
-                className="col-span-2 h-full w-full object-cover rounded-xl shadow-md cursor-pointer"
+                fill
+                sizes="(max-width: 1024px) 50vw, 25vw"
+                className="object-cover cursor-pointer"
                 onClick={() => openModal(img)}
               />
-            ))}
+            </div>
+          ))}
       </div>
 
       {showModal && (
         <dialog className="modal modal-open" onClick={closeModal}>
           <div
-            className="modal-box relative max-w-3xl"
+            className="modal-box relative max-w-3xl w-full"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-10"
               onClick={closeModal}
             >
               ✕
             </button>
-            <img
+            <Image
               src={selectedImage}
               alt="Enlarged property image"
+              width={1200}
+              height={800}
               className="w-full h-auto rounded-lg"
             />
           </div>
