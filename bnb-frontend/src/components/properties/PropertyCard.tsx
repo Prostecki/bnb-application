@@ -11,7 +11,11 @@ interface PropertyCardProps {
   handleDelete: (propertyId: string) => void;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, user, handleDelete }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({
+  property,
+  user,
+  handleDelete,
+}) => {
   return (
     <div
       key={property.id}
@@ -28,16 +32,18 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, user, handleDelet
       </figure>
       <div className="card-body">
         <div className="absolute top-4 right-0 bg-red-500/90 px-2 py-1 text-white rounded-l-md">
-          <span className="font-bold">$ {property.pricePerNight}</span> / per night
+          <span className="font-bold">$ {property.pricePerNight}</span> / per
+          night
         </div>
         <h2 className="card-title">{property.name}</h2>
         <p className="truncate">{property.description}</p>
-        <Rating rating={property.rating} />
+        {property.rating > 0 ? (
+          <Rating rating={property.rating} />
+        ) : (
+          <p className="text-primary italic">New Property</p>
+        )}
         <div className="card-actions justify-between items-center mt-2">
-          <Link
-            href={`/properties/${property.id}`}
-            className="btn btn-primary"
-          >
+          <Link href={`/properties/${property.id}`} className="btn btn-primary">
             View
           </Link>
           {user?.isAdmin && (
