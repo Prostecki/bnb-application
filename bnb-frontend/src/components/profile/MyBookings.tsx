@@ -209,7 +209,7 @@ const MyBookings = ({ initialBookings, onDataChange }: MyBookingsProps) => {
                       </div>
                     </div>
 
-                    <div className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
                       {isPastBooking ? (
                         <p className="text-gray-500 dark:text-gray-400 font-semibold">
                           Your previous booking

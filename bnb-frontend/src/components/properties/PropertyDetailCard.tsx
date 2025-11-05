@@ -25,7 +25,7 @@ export default function PropertyDetailCard({
         return (
           <div className="flex flex-col py-4 gap-4 items-start">
             <p className="text-lg text-gray-500">
-              <span className="text-black text-xl font-bold underline underline-offset-2">
+              <span className="text-black dark:text-white text-xl font-bold underline underline-offset-2">
                 {pricePerNight}$ USD
               </span>{" "}
               per night
